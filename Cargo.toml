@@ -1,0 +1,6 @@
+[workspace]
+members = [
+  "bifrost-ice",
+  "bifrost-sdp",
+  "bifrost-webrtc",
+]
