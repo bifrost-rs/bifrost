@@ -1,4 +1,5 @@
 use nom::IResult;
+use url::Url;
 
 use crate::{Information, Origin, Parse, SessionName, Version};
 
@@ -9,6 +10,7 @@ pub struct SessionDescription {
     pub origin: Origin,
     pub session_name: SessionName,
     pub session_information: Option<Information>,
+    pub url: Option<Url>,
 }
 
 impl Parse for SessionDescription {
@@ -17,6 +19,7 @@ impl Parse for SessionDescription {
         let (rest, origin) = Parse::parse(rest)?;
         let (rest, session_name) = Parse::parse(rest)?;
         let (rest, session_information) = Parse::parse(rest)?;
+        let (rest, url) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -25,6 +28,7 @@ impl Parse for SessionDescription {
                 origin,
                 session_name,
                 session_information,
+                url,
             },
         ))
     }
@@ -36,21 +40,28 @@ mod tests {
 
     #[test]
     fn test_valid() {
-        let s = "v=0\r\n\
-                 o=mozilla...THIS_IS_SDPARTA-68.0 937286732060122712 0 IN IP4 0.0.0.0\r\n\
-                 s=-\r\n";
+        let s = r#"v=0
+o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5
+s=SDP Seminar
+i=A Seminar on the session description protocol
+u=http://www.example.com/seminars/sdp.pdf
+"#;
+
         let expected = SessionDescription {
             version: Version {},
             origin: Origin {
-                username: "mozilla...THIS_IS_SDPARTA-68.0".to_owned(),
-                session_id: 937286732060122712,
-                session_version: 0,
+                username: "jdoe".to_owned(),
+                session_id: 2890844526,
+                session_version: 2890842807,
                 network_type: "IN".to_owned(),
                 address_type: "IP4".to_owned(),
-                unicast_address: "0.0.0.0".to_owned(),
+                unicast_address: "10.47.16.5".to_owned(),
             },
-            session_name: SessionName("-".to_owned()),
-            session_information: None,
+            session_name: SessionName("SDP Seminar".to_owned()),
+            session_information: Some(Information(
+                "A Seminar on the session description protocol".to_owned(),
+            )),
+            url: Some(Url::parse("http://www.example.com/seminars/sdp.pdf").unwrap()),
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();

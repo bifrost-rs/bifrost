@@ -1,3 +1,4 @@
+use nom::combinator::map;
 use nom::IResult;
 
 use crate::util;
@@ -10,8 +11,9 @@ pub struct SessionName(pub String);
 
 impl Parse for SessionName {
     fn parse(input: &str) -> IResult<&str, SessionName> {
-        let (rest, value) = util::parse_single_field_line("s=", input)?;
-        Ok((rest, SessionName(value.to_owned())))
+        map(util::parse_single_field_line("s="), |value| {
+            SessionName(value.to_owned())
+        })(input)
     }
 }
 

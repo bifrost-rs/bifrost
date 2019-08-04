@@ -9,3 +9,4 @@ edition = "2018"
 
 [dependencies]
 nom = "5.0"
+url = "2.0"

@@ -2,6 +2,7 @@ mod information;
 mod origin;
 mod session_description;
 mod session_name;
+mod url;
 mod util;
 mod version;
 

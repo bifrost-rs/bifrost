@@ -1,3 +1,4 @@
+use nom::combinator::map;
 use nom::IResult;
 
 use crate::util;
@@ -10,8 +11,9 @@ pub struct Information(pub String);
 
 impl Parse for Information {
     fn parse(input: &str) -> IResult<&str, Information> {
-        let (rest, value) = util::parse_single_field_line("i=", input)?;
-        Ok((rest, Information(value.to_owned())))
+        map(util::parse_single_field_line("i="), |value| {
+            Information(value.to_owned())
+        })(input)
     }
 }
 
