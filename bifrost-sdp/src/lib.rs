@@ -10,6 +10,7 @@ pub use crate::information::Information;
 pub use crate::origin::Origin;
 pub use crate::session_description::SessionDescription;
 pub use crate::session_name::SessionName;
+pub use crate::url::Url;
 pub use crate::version::Version;
 
 use nom::IResult;

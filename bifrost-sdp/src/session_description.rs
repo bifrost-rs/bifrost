@@ -1,7 +1,6 @@
 use nom::IResult;
-use url::Url;
 
-use crate::{Information, Origin, Parse, SessionName, Version};
+use crate::{Information, Origin, Parse, SessionName, Url, Version};
 
 // https://tools.ietf.org/html/rfc4566#section-5
 #[derive(Debug, PartialEq)]
