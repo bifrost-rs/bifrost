@@ -3,6 +3,8 @@ use nom::character::complete::{digit1, line_ending};
 use nom::combinator::{map, map_res};
 use nom::IResult;
 
+use crate::Parse;
+
 // https://tools.ietf.org/html/rfc4566#section-5.2
 // o=<username> <sess-id> <sess-version> <nettype> <addrtype> <unicast-address>
 #[derive(Debug, PartialEq)]
@@ -15,30 +17,30 @@ pub struct Origin {
     pub unicast_address: String,
 }
 
-impl Origin {
-    pub fn parse(input: &str) -> IResult<&str, Origin> {
-        let (input, _) = tag("o=")(input)?;
+impl Parse for Origin {
+    fn parse(input: &str) -> IResult<&str, Origin> {
+        let (rest, _) = tag("o=")(input)?;
 
-        let (input, username) = parse_field(input)?;
-        let (input, _) = tag(" ")(input)?;
+        let (rest, username) = parse_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
 
-        let (input, session_id) = parse_u64(input)?;
-        let (input, _) = tag(" ")(input)?;
+        let (rest, session_id) = parse_u64(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
 
-        let (input, session_version) = parse_u64(input)?;
-        let (input, _) = tag(" ")(input)?;
+        let (rest, session_version) = parse_u64(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
 
-        let (input, network_type) = parse_field(input)?;
-        let (input, _) = tag(" ")(input)?;
+        let (rest, network_type) = parse_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
 
-        let (input, address_type) = parse_field(input)?;
-        let (input, _) = tag(" ")(input)?;
+        let (rest, address_type) = parse_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
 
-        let (input, unicast_address) = parse_field(input)?;
-        let (input, _) = line_ending(input)?;
+        let (rest, unicast_address) = parse_field(rest)?;
+        let (rest, _) = line_ending(rest)?;
 
         Ok((
-            input,
+            rest,
             Origin {
                 username,
                 session_id,

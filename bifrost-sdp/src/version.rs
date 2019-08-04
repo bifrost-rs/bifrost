@@ -2,16 +2,18 @@ use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::IResult;
 
+use crate::Parse;
+
 // https://tools.ietf.org/html/rfc4566#section-5.1
 // v=0
 #[derive(Debug, PartialEq)]
-pub struct Version {}
+pub struct Version;
 
-impl Version {
-    pub fn parse(input: &str) -> IResult<&str, Version> {
-        let (input, _) = tag("v=0")(input)?;
-        let (input, _) = line_ending(input)?;
-        Ok((input, Version {}))
+impl Parse for Version {
+    fn parse(input: &str) -> IResult<&str, Version> {
+        let (rest, _) = tag("v=0")(input)?;
+        let (rest, _) = line_ending(rest)?;
+        Ok((rest, Version))
     }
 }
 

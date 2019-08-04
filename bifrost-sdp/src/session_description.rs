@@ -1,25 +1,29 @@
 use nom::IResult;
 
-use crate::{Origin, SessionName, Version};
+use crate::{Information, Origin, Parse, SessionName, Version};
 
 #[derive(Debug, PartialEq)]
 pub struct SessionDescription {
     pub version: Version,
     pub origin: Origin,
     pub session_name: SessionName,
+    pub session_information: Option<Information>,
 }
 
-impl SessionDescription {
-    pub fn parse(input: &str) -> IResult<&str, SessionDescription> {
-        let (input, version) = Version::parse(input)?;
-        let (input, origin) = Origin::parse(input)?;
-        let (input, session_name) = SessionName::parse(input)?;
+impl Parse for SessionDescription {
+    fn parse(input: &str) -> IResult<&str, SessionDescription> {
+        let (rest, version) = Parse::parse(input)?;
+        let (rest, origin) = Parse::parse(rest)?;
+        let (rest, session_name) = Parse::parse(rest)?;
+        let (rest, session_information) = Parse::parse(rest)?;
+
         Ok((
-            input,
+            rest,
             SessionDescription {
                 version,
                 origin,
                 session_name,
+                session_information,
             },
         ))
     }
@@ -45,6 +49,7 @@ mod tests {
                 unicast_address: "0.0.0.0".to_owned(),
             },
             session_name: SessionName("-".to_owned()),
+            session_information: None,
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();
