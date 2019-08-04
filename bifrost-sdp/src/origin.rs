@@ -71,7 +71,7 @@ mod tests {
         let s = "o=- 4858251974351650128 2 IN IP4 127.0.0.1\r\nrest";
         let expected = Origin {
             username: "-".to_owned(),
-            session_id: 4858251974351650128,
+            session_id: 4_858_251_974_351_650_128,
             session_version: 2,
             network_type: "IN".to_owned(),
             address_type: "IP4".to_owned(),
@@ -88,8 +88,8 @@ mod tests {
         let s = "o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\nmore\r\nmore";
         let expected = Origin {
             username: "jdoe".to_owned(),
-            session_id: 2890844526,
-            session_version: 2890842807,
+            session_id: 2_890_844_526,
+            session_version: 2_890_842_807,
             network_type: "IN".to_owned(),
             address_type: "IP4".to_owned(),
             unicast_address: "10.47.16.5".to_owned(),

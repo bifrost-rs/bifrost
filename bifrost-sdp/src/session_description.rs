@@ -73,8 +73,8 @@ e=j.doe@example.com (Jane Doe)
             version: Version {},
             origin: Origin {
                 username: "jdoe".to_owned(),
-                session_id: 2890844526,
-                session_version: 2890842807,
+                session_id: 2_890_844_526,
+                session_version: 2_890_842_807,
                 network_type: "IN".to_owned(),
                 address_type: "IP4".to_owned(),
                 unicast_address: "10.47.16.5".to_owned(),
