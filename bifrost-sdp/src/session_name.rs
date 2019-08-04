@@ -4,13 +4,14 @@ use nom::IResult;
 use crate::util;
 use crate::Parse;
 
-// https://tools.ietf.org/html/rfc4566#section-5.3
-// s=<session name>
+/// A parsed session name line, defined in
+/// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.3).
 #[derive(Debug, PartialEq)]
 pub struct SessionName(pub String);
 
 impl Parse for SessionName {
     fn parse(input: &str) -> IResult<&str, SessionName> {
+        // s=<session name>
         map(util::parse_single_field_line("s="), |value| {
             SessionName(value.to_owned())
         })(input)

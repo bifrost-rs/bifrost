@@ -5,8 +5,8 @@ use nom::IResult;
 
 use crate::Parse;
 
-// https://tools.ietf.org/html/rfc4566#section-5.2
-// o=<username> <sess-id> <sess-version> <nettype> <addrtype> <unicast-address>
+/// A parsed origin line, defined in
+/// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.2).
 #[derive(Debug, PartialEq)]
 pub struct Origin {
     pub username: String,
@@ -19,6 +19,7 @@ pub struct Origin {
 
 impl Parse for Origin {
     fn parse(input: &str) -> IResult<&str, Origin> {
+        // o=<username> <sess-id> <sess-version> <nettype> <addrtype> <unicast-address>
         let (rest, _) = tag("o=")(input)?;
 
         let (rest, username) = parse_field(rest)?;

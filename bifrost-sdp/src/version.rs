@@ -4,13 +4,14 @@ use nom::IResult;
 
 use crate::Parse;
 
-// https://tools.ietf.org/html/rfc4566#section-5.1
-// v=0
+/// A parsed protocal version line, defined in
+/// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.1).
 #[derive(Debug, PartialEq)]
 pub struct Version;
 
 impl Parse for Version {
     fn parse(input: &str) -> IResult<&str, Version> {
+        // v=0
         let (rest, _) = tag("v=0")(input)?;
         let (rest, _) = line_ending(rest)?;
         Ok((rest, Version))

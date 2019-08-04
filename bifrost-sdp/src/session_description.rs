@@ -1,15 +1,16 @@
 use nom::IResult;
 
-use crate::{Information, Origin, Parse, SessionName, Url, Version};
+use crate::{Information, Origin, Parse, SessionName, Uri, Version};
 
-// https://tools.ietf.org/html/rfc4566#section-5
+/// A parsed session description line, defined in
+/// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
 #[derive(Debug, PartialEq)]
 pub struct SessionDescription {
     pub version: Version,
     pub origin: Origin,
     pub session_name: SessionName,
     pub session_information: Option<Information>,
-    pub url: Option<Url>,
+    pub uri: Option<Uri>,
 }
 
 impl Parse for SessionDescription {
@@ -18,7 +19,7 @@ impl Parse for SessionDescription {
         let (rest, origin) = Parse::parse(rest)?;
         let (rest, session_name) = Parse::parse(rest)?;
         let (rest, session_information) = Parse::parse(rest)?;
-        let (rest, url) = Parse::parse(rest)?;
+        let (rest, uri) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -27,7 +28,7 @@ impl Parse for SessionDescription {
                 origin,
                 session_name,
                 session_information,
-                url,
+                uri,
             },
         ))
     }
@@ -60,7 +61,9 @@ u=http://www.example.com/seminars/sdp.pdf
             session_information: Some(Information(
                 "A Seminar on the session description protocol".to_owned(),
             )),
-            url: Some(Url::parse("http://www.example.com/seminars/sdp.pdf").unwrap()),
+            uri: Some(Uri("http://www.example.com/seminars/sdp.pdf"
+                .parse()
+                .unwrap())),
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();

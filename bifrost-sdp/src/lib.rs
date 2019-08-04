@@ -2,7 +2,7 @@ mod information;
 mod origin;
 mod session_description;
 mod session_name;
-mod url;
+mod uri;
 mod util;
 mod version;
 
@@ -10,7 +10,7 @@ pub use crate::information::Information;
 pub use crate::origin::Origin;
 pub use crate::session_description::SessionDescription;
 pub use crate::session_name::SessionName;
-pub use crate::url::Url;
+pub use crate::uri::Uri;
 pub use crate::version::Version;
 
 use nom::IResult;
