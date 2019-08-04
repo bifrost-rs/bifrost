@@ -1,21 +1,29 @@
-mod email_address;
-mod information;
-mod origin;
-mod phone_number;
+// Expose only the `SessionDescription` type.
 mod session_description;
-mod session_name;
-mod uri;
-mod util;
-mod version;
+pub use self::session_description::SessionDescription;
 
-pub use crate::email_address::EmailAddress;
-pub use crate::information::Information;
-pub use crate::origin::Origin;
-pub use crate::phone_number::PhoneNumber;
-pub use crate::session_description::SessionDescription;
-pub use crate::session_name::SessionName;
-pub use crate::uri::Uri;
-pub use crate::version::Version;
+mod email_address;
+use self::email_address::EmailAddress;
+
+mod information;
+use self::information::Information;
+
+mod origin;
+use self::origin::Origin;
+
+mod phone_number;
+use self::phone_number::PhoneNumber;
+
+mod session_name;
+use self::session_name::SessionName;
+
+mod uri;
+use self::uri::Uri;
+
+mod version;
+use self::version::Version;
+
+mod util;
 
 use nom::IResult;
 
