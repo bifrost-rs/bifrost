@@ -16,6 +16,21 @@ pub struct SessionDescription {
 
 impl Parse for SessionDescription {
     fn parse(input: &str) -> IResult<&str, SessionDescription> {
+        // v=  (protocol version)
+        // o=  (originator and session identifier)
+        // s=  (session name)
+        // i=* (session information)
+        // u=* (URI of description)
+        // e=* (email address)
+        // p=* (phone number)
+        // c=* (connection information -- not required if included in all media)
+        // b=* (zero or more bandwidth information lines)
+        // One or more time descriptions ("t=" and "r=" lines; see below)
+        // z=* (time zone adjustments)
+        // k=* (encryption key)
+        // a=* (zero or more session attribute lines)
+        // Zero or more media descriptions
+
         let (rest, version) = Parse::parse(input)?;
         let (rest, origin) = Parse::parse(rest)?;
         let (rest, session_name) = Parse::parse(rest)?;

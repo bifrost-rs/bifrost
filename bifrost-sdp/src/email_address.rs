@@ -11,6 +11,7 @@ pub struct EmailAddress(pub String);
 
 impl Parse for EmailAddress {
     fn parse(input: &str) -> IResult<&str, EmailAddress> {
+        // e=<email-address>
         map(util::parse_nonempty_line("e="), |value| {
             EmailAddress(value.to_owned())
         })(input)
