@@ -2,7 +2,7 @@ use nom::IResult;
 
 use crate::{Information, Origin, Parse, SessionName, Uri, Version};
 
-/// A parsed session description line, defined in
+/// A parsed SDP session description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
 #[derive(Debug, PartialEq)]
 pub struct SessionDescription {
