@@ -1,6 +1,6 @@
 use nom::IResult;
 
-use crate::{EmailAddress, Information, Origin, Parse, SessionName, Uri, Version};
+use crate::{EmailAddress, Information, Origin, Parse, PhoneNumber, SessionName, Uri, Version};
 
 /// A parsed SDP session description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
@@ -12,6 +12,7 @@ pub struct SessionDescription {
     pub session_information: Option<Information>,
     pub uri: Option<Uri>,
     pub email_address: Option<EmailAddress>,
+    pub phone_number: Option<PhoneNumber>,
 }
 
 impl Parse for SessionDescription {
@@ -37,6 +38,7 @@ impl Parse for SessionDescription {
         let (rest, session_information) = Parse::parse(rest)?;
         let (rest, uri) = Parse::parse(rest)?;
         let (rest, email_address) = Parse::parse(rest)?;
+        let (rest, phone_number) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -47,6 +49,7 @@ impl Parse for SessionDescription {
                 session_information,
                 uri,
                 email_address,
+                phone_number,
             },
         ))
     }
@@ -84,6 +87,7 @@ e=j.doe@example.com (Jane Doe)
                 .parse()
                 .unwrap())),
             email_address: Some(EmailAddress("j.doe@example.com (Jane Doe)".to_owned())),
+            phone_number: None,
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();

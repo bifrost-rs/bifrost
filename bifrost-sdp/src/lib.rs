@@ -1,6 +1,7 @@
 mod email_address;
 mod information;
 mod origin;
+mod phone_number;
 mod session_description;
 mod session_name;
 mod uri;
@@ -10,6 +11,7 @@ mod version;
 pub use crate::email_address::EmailAddress;
 pub use crate::information::Information;
 pub use crate::origin::Origin;
+pub use crate::phone_number::PhoneNumber;
 pub use crate::session_description::SessionDescription;
 pub use crate::session_name::SessionName;
 pub use crate::uri::Uri;
