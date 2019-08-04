@@ -16,7 +16,7 @@ pub struct SessionDescription {
 }
 
 impl Parse for SessionDescription {
-    fn parse(input: &str) -> IResult<&str, SessionDescription> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // v=  (protocol version)
         // o=  (originator and session identifier)
         // s=  (session name)
@@ -42,7 +42,7 @@ impl Parse for SessionDescription {
 
         Ok((
             rest,
-            SessionDescription {
+            Self {
                 version,
                 origin,
                 session_name,

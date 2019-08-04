@@ -10,10 +10,10 @@ use crate::Parse;
 pub struct EmailAddress(pub String);
 
 impl Parse for EmailAddress {
-    fn parse(input: &str) -> IResult<&str, EmailAddress> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // e=<email-address>
         map(util::parse_nonempty_line("e="), |value| {
-            EmailAddress(value.to_owned())
+            Self(value.to_owned())
         })(input)
     }
 }

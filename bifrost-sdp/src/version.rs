@@ -10,11 +10,11 @@ use crate::Parse;
 pub struct Version;
 
 impl Parse for Version {
-    fn parse(input: &str) -> IResult<&str, Version> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // v=0
         let (rest, _) = tag("v=0")(input)?;
         let (rest, _) = line_ending(rest)?;
-        Ok((rest, Version))
+        Ok((rest, Self))
     }
 }
 

@@ -18,7 +18,7 @@ pub struct Origin {
 }
 
 impl Parse for Origin {
-    fn parse(input: &str) -> IResult<&str, Origin> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // o=<username> <sess-id> <sess-version> <nettype> <addrtype> <unicast-address>
         let (rest, _) = tag("o=")(input)?;
 
@@ -42,7 +42,7 @@ impl Parse for Origin {
 
         Ok((
             rest,
-            Origin {
+            Self {
                 username,
                 session_id,
                 session_version,

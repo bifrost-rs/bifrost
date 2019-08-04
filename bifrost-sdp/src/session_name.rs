@@ -10,10 +10,10 @@ use crate::Parse;
 pub struct SessionName(pub String);
 
 impl Parse for SessionName {
-    fn parse(input: &str) -> IResult<&str, SessionName> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // s=<session name>
         map(util::parse_nonempty_line("s="), |value| {
-            SessionName(value.to_owned())
+            Self(value.to_owned())
         })(input)
     }
 }

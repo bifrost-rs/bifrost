@@ -10,10 +10,10 @@ use crate::Parse;
 pub struct Information(pub String);
 
 impl Parse for Information {
-    fn parse(input: &str) -> IResult<&str, Information> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // i=<session description>
         map(util::parse_nonempty_line("i="), |value| {
-            Information(value.to_owned())
+            Self(value.to_owned())
         })(input)
     }
 }

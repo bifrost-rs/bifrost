@@ -11,9 +11,9 @@ use crate::Parse;
 pub struct Uri(pub HttpUri);
 
 impl Parse for Uri {
-    fn parse(input: &str) -> IResult<&str, Uri> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // u=<uri>
-        map(map_res(util::parse_nonempty_line("u="), str::parse), Uri)(input)
+        map(map_res(util::parse_nonempty_line("u="), str::parse), Self)(input)
     }
 }
 

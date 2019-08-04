@@ -10,10 +10,10 @@ use crate::Parse;
 pub struct PhoneNumber(pub String);
 
 impl Parse for PhoneNumber {
-    fn parse(input: &str) -> IResult<&str, PhoneNumber> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // p=<phone-number>
         map(util::parse_nonempty_line("p="), |value| {
-            PhoneNumber(value.to_owned())
+            Self(value.to_owned())
         })(input)
     }
 }
