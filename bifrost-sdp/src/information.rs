@@ -12,7 +12,7 @@ pub struct Information(pub String);
 impl Parse for Information {
     fn parse(input: &str) -> IResult<&str, Information> {
         // i=<session description>
-        map(util::parse_single_field_line("i="), |value| {
+        map(util::parse_nonempty_line("i="), |value| {
             Information(value.to_owned())
         })(input)
     }

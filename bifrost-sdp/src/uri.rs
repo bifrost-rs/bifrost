@@ -13,10 +13,7 @@ pub struct Uri(pub HttpUri);
 impl Parse for Uri {
     fn parse(input: &str) -> IResult<&str, Uri> {
         // u=<uri>
-        map(
-            map_res(util::parse_single_field_line("u="), str::parse),
-            Uri,
-        )(input)
+        map(map_res(util::parse_nonempty_line("u="), str::parse), Uri)(input)
     }
 }
 
@@ -26,7 +23,11 @@ mod tests {
 
     #[test]
     fn test_valid() {
-        assert!(Uri::parse("u=http://www.example.com/seminars/sdp.pdf\r\n").is_ok());
+        let uri_str = "http://www.example.com/seminars/sdp.pdf";
+        let line = format!("u={}\r\nrest\n", uri_str);
+        let (rest, uri) = Uri::parse(&line).unwrap();
+        assert_eq!(rest, "rest\n");
+        assert_eq!(uri, Uri(HttpUri::from_static(uri_str)));
     }
 
     #[test]

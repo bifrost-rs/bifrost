@@ -12,7 +12,7 @@ pub struct SessionName(pub String);
 impl Parse for SessionName {
     fn parse(input: &str) -> IResult<&str, SessionName> {
         // s=<session name>
-        map(util::parse_single_field_line("s="), |value| {
+        map(util::parse_nonempty_line("s="), |value| {
             SessionName(value.to_owned())
         })(input)
     }

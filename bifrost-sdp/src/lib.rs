@@ -1,3 +1,4 @@
+mod email_address;
 mod information;
 mod origin;
 mod session_description;
@@ -6,6 +7,7 @@ mod uri;
 mod util;
 mod version;
 
+pub use crate::email_address::EmailAddress;
 pub use crate::information::Information;
 pub use crate::origin::Origin;
 pub use crate::session_description::SessionDescription;
