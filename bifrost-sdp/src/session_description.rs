@@ -2,6 +2,7 @@ use nom::IResult;
 
 use crate::{Information, Origin, Parse, SessionName, Version};
 
+// https://tools.ietf.org/html/rfc4566#section-5
 #[derive(Debug, PartialEq)]
 pub struct SessionDescription {
     pub version: Version,
