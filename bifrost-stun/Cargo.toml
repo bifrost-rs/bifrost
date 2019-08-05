@@ -1,5 +1,5 @@
 [package]
-name = "bifrost-webrtc"
+name = "bifrost-stun"
 version = "0.1.0"
 authors = ["Zizheng Tai <me@zizheng.me>"]
 edition = "2018"
