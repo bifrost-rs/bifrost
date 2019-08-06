@@ -12,7 +12,6 @@ readme = "README.md"
 
 [badges]
 travis-ci = { repository = "bifrost-rs/bifrost" }
-maintenance = { status = "actively-developed" }
 
 [dependencies]
 http = "0.1"
