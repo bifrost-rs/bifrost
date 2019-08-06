@@ -1,4 +1,4 @@
-# bifrost-sdp
+# Bifrost SDP
 
 [![Build Status](https://travis-ci.com/bifrost-rs/bifrost.svg?branch=master)](https://travis-ci.com/bifrost-rs/bifrost)
 
