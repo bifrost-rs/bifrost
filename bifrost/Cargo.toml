@@ -14,3 +14,5 @@ readme = "README.md"
 travis-ci = { repository = "bifrost-rs/bifrost" }
 
 [dependencies]
+bifrost-sdp = { version = "0.1.0-alpha", path = "../bifrost-sdp" }
+bifrost-stun = { version = "0.1.0-alpha", path = "../bifrost-stun" }
