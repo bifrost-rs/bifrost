@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "bifrost",
   "bifrost-sdp",
   "bifrost-stun",
 ]
