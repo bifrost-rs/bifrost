@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/bifrost-rs/bifrost.svg?branch=master)](https://travis-ci.com/bifrost-rs/bifrost)
 [![crates.io](https://img.shields.io/crates/v/bifrost-ice)](https://crates.io/crates/bifrost-ice)
+[![License](https://img.shields.io/crates/l/bifrost-ice)](#license)
 
 A Rust implementation of the [ICE](https://tools.ietf.org/html/rfc8445) protocol.
 

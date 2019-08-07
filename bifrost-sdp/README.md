@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/bifrost-rs/bifrost.svg?branch=master)](https://travis-ci.com/bifrost-rs/bifrost)
 [![crates.io](https://img.shields.io/crates/v/bifrost-sdp)](https://crates.io/crates/bifrost-sdp)
+[![License](https://img.shields.io/crates/l/bifrost-sdp)](#license)
 
 A Rust implementation of the [Session Description Protocol](https://tools.ietf.org/html/rfc4566).
 
