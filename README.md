@@ -1,6 +1,7 @@
 # Bifrost
 
 [![Build Status](https://travis-ci.com/bifrost-rs/bifrost.svg?branch=master)](https://travis-ci.com/bifrost-rs/bifrost)
+[![crates.io](https://img.shields.io/crates/v/bifrost)](https://crates.io/crates/bifrost)
 
 Real-time media and data communication for Rust.
 

@@ -1,6 +1,7 @@
 # Bifrost STUN
 
 [![Build Status](https://travis-ci.com/bifrost-rs/bifrost.svg?branch=master)](https://travis-ci.com/bifrost-rs/bifrost)
+[![crates.io](https://img.shields.io/crates/v/bifrost-stun)](https://crates.io/crates/bifrost-stun)
 
 A Rust implementation of the [STUN](https://tools.ietf.org/html/rfc5389) protocol.
 
