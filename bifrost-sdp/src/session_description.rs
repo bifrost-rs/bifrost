@@ -70,7 +70,7 @@ e=j.doe@example.com (Jane Doe)
 "#;
 
         let expected = SessionDescription {
-            version: Version {},
+            version: Version,
             origin: Origin {
                 username: "jdoe".to_owned(),
                 session_id: 2_890_844_526,
