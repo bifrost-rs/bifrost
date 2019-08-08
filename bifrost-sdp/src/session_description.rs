@@ -1,6 +1,9 @@
 use nom::IResult;
 
-use crate::{EmailAddress, Information, Origin, Parse, PhoneNumber, SessionName, Uri, Version};
+use crate::{
+    ConnectionData, EmailAddress, Information, Origin, Parse, PhoneNumber, SessionName, Uri,
+    Version,
+};
 
 /// A parsed SDP session description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
@@ -13,6 +16,7 @@ pub struct SessionDescription {
     pub uri: Option<Uri>,
     pub email_address: Option<EmailAddress>,
     pub phone_number: Option<PhoneNumber>,
+    pub connection_data: Option<ConnectionData>,
 }
 
 impl Parse for SessionDescription {
@@ -39,6 +43,7 @@ impl Parse for SessionDescription {
         let (rest, uri) = Parse::parse(rest)?;
         let (rest, email_address) = Parse::parse(rest)?;
         let (rest, phone_number) = Parse::parse(rest)?;
+        let (rest, connection_data) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -50,6 +55,7 @@ impl Parse for SessionDescription {
                 uri,
                 email_address,
                 phone_number,
+                connection_data,
             },
         ))
     }
@@ -67,6 +73,7 @@ s=SDP Seminar
 i=A Seminar on the session description protocol
 u=http://www.example.com/seminars/sdp.pdf
 e=j.doe@example.com (Jane Doe)
+c=IN IP4 224.2.36.42/127
 "#;
 
         let expected = SessionDescription {
@@ -88,6 +95,11 @@ e=j.doe@example.com (Jane Doe)
                 .unwrap())),
             email_address: Some(EmailAddress("j.doe@example.com (Jane Doe)".to_owned())),
             phone_number: None,
+            connection_data: Some(ConnectionData {
+                network_type: "IN".to_owned(),
+                address_type: "IP4".to_owned(),
+                connection_address: "224.2.36.42/127".to_owned(),
+            }),
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();

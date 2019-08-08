@@ -1,3 +1,4 @@
+mod connection_data;
 mod email_address;
 mod information;
 mod origin;
@@ -11,14 +12,13 @@ mod version;
 pub use crate::session_description::SessionDescription;
 
 use crate::{
-    email_address::EmailAddress, information::Information, origin::Origin,
-    phone_number::PhoneNumber, session_name::SessionName, uri::Uri, version::Version,
+    connection_data::ConnectionData, email_address::EmailAddress, information::Information,
+    origin::Origin, phone_number::PhoneNumber, session_name::SessionName, uri::Uri,
+    version::Version,
 };
 
-trait Parse {
-    fn parse(input: &str) -> nom::IResult<&str, Self>
-    where
-        Self: Sized;
+trait Parse: Sized {
+    fn parse(input: &str) -> nom::IResult<&str, Self>;
 }
 
 impl<T: Parse> Parse for Option<T> {

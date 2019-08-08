@@ -1,8 +1,7 @@
-use nom::bytes::complete::{is_not, tag};
-use nom::character::complete::{digit1, line_ending};
-use nom::combinator::{map, map_res};
+use nom::bytes::complete::tag;
 use nom::IResult;
 
+use crate::util;
 use crate::Parse;
 
 /// A parsed origin line, defined in
@@ -21,24 +20,12 @@ impl Parse for Origin {
     fn parse(input: &str) -> IResult<&str, Self> {
         // o=<username> <sess-id> <sess-version> <nettype> <addrtype> <unicast-address>
         let (rest, _) = tag("o=")(input)?;
-
-        let (rest, username) = parse_field(rest)?;
-        let (rest, _) = tag(" ")(rest)?;
-
-        let (rest, session_id) = parse_u64(rest)?;
-        let (rest, _) = tag(" ")(rest)?;
-
-        let (rest, session_version) = parse_u64(rest)?;
-        let (rest, _) = tag(" ")(rest)?;
-
-        let (rest, network_type) = parse_field(rest)?;
-        let (rest, _) = tag(" ")(rest)?;
-
-        let (rest, address_type) = parse_field(rest)?;
-        let (rest, _) = tag(" ")(rest)?;
-
-        let (rest, unicast_address) = parse_field(rest)?;
-        let (rest, _) = line_ending(rest)?;
+        let (rest, username) = util::parse_field(rest)?;
+        let (rest, session_id) = util::parse_field(rest)?;
+        let (rest, session_version) = util::parse_field(rest)?;
+        let (rest, network_type) = util::parse_field(rest)?;
+        let (rest, address_type) = util::parse_field(rest)?;
+        let (rest, unicast_address) = util::parse_last_field(rest)?;
 
         Ok((
             rest,
@@ -52,14 +39,6 @@ impl Parse for Origin {
             },
         ))
     }
-}
-
-fn parse_field(input: &str) -> IResult<&str, String> {
-    map(is_not(" \r\n"), String::from)(input)
-}
-
-fn parse_u64(input: &str) -> IResult<&str, u64> {
-    map_res(digit1, str::parse)(input)
 }
 
 #[cfg(test)]
