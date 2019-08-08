@@ -1,8 +1,8 @@
 use nom::IResult;
 
 use crate::{
-    ConnectionData, EmailAddress, Information, Origin, Parse, PhoneNumber, SessionName, Uri,
-    Version,
+    Bandwidth, ConnectionData, EmailAddress, Information, Origin, Parse, PhoneNumber, SessionName,
+    Uri, Version,
 };
 
 /// A parsed SDP session description, defined in
@@ -17,6 +17,7 @@ pub struct SessionDescription {
     pub email_address: Option<EmailAddress>,
     pub phone_number: Option<PhoneNumber>,
     pub connection_data: Option<ConnectionData>,
+    pub bandwidth: Option<Bandwidth>,
 }
 
 impl Parse for SessionDescription {
@@ -44,6 +45,7 @@ impl Parse for SessionDescription {
         let (rest, email_address) = Parse::parse(rest)?;
         let (rest, phone_number) = Parse::parse(rest)?;
         let (rest, connection_data) = Parse::parse(rest)?;
+        let (rest, bandwidth) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -56,6 +58,7 @@ impl Parse for SessionDescription {
                 email_address,
                 phone_number,
                 connection_data,
+                bandwidth,
             },
         ))
     }
@@ -74,6 +77,7 @@ i=A Seminar on the session description protocol
 u=http://www.example.com/seminars/sdp.pdf
 e=j.doe@example.com (Jane Doe)
 c=IN IP4 224.2.36.42/127
+b=X-YZ:128
 "#;
 
         let expected = SessionDescription {
@@ -99,6 +103,11 @@ c=IN IP4 224.2.36.42/127
                 network_type: "IN".to_owned(),
                 address_type: "IP4".to_owned(),
                 connection_address: "224.2.36.42/127".to_owned(),
+            }),
+            bandwidth: Some(Bandwidth {
+                experimental: true,
+                bwtype: "YZ".to_owned(),
+                bandwidth: 128,
             }),
         };
 

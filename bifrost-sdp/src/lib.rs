@@ -1,3 +1,4 @@
+mod bandwidth;
 mod connection_data;
 mod email_address;
 mod information;
@@ -12,9 +13,9 @@ mod version;
 pub use crate::session_description::SessionDescription;
 
 use crate::{
-    connection_data::ConnectionData, email_address::EmailAddress, information::Information,
-    origin::Origin, phone_number::PhoneNumber, session_name::SessionName, uri::Uri,
-    version::Version,
+    bandwidth::Bandwidth, connection_data::ConnectionData, email_address::EmailAddress,
+    information::Information, origin::Origin, phone_number::PhoneNumber, session_name::SessionName,
+    uri::Uri, version::Version,
 };
 
 trait Parse: Sized {
