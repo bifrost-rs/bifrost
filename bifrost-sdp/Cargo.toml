@@ -16,3 +16,4 @@ travis-ci = { repository = "bifrost-rs/bifrost" }
 [dependencies]
 http = "0.1"
 nom = "5.0"
+vec1 = "1.4"

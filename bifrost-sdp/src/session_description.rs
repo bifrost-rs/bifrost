@@ -1,8 +1,9 @@
 use nom::IResult;
+use vec1::Vec1;
 
 use crate::{
     Bandwidth, ConnectionData, EmailAddress, Information, Origin, Parse, PhoneNumber, SessionName,
-    Uri, Version,
+    TimeDescription, Uri, Version,
 };
 
 /// A parsed SDP session description, defined in
@@ -18,6 +19,7 @@ pub struct SessionDescription {
     pub phone_number: Option<PhoneNumber>,
     pub connection_data: Option<ConnectionData>,
     pub bandwidth: Option<Bandwidth>,
+    pub time_descriptions: Vec1<TimeDescription>,
 }
 
 impl Parse for SessionDescription {
@@ -46,6 +48,7 @@ impl Parse for SessionDescription {
         let (rest, phone_number) = Parse::parse(rest)?;
         let (rest, connection_data) = Parse::parse(rest)?;
         let (rest, bandwidth) = Parse::parse(rest)?;
+        let (rest, time_descriptions) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -59,6 +62,7 @@ impl Parse for SessionDescription {
                 phone_number,
                 connection_data,
                 bandwidth,
+                time_descriptions,
             },
         ))
     }
@@ -67,6 +71,7 @@ impl Parse for SessionDescription {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::Timing;
 
     #[test]
     fn test_valid() {
@@ -78,6 +83,8 @@ u=http://www.example.com/seminars/sdp.pdf
 e=j.doe@example.com (Jane Doe)
 c=IN IP4 224.2.36.42/127
 b=X-YZ:128
+t=3034423619 3042462419
+r=604800 3600 0 90000
 "#;
 
         let expected = SessionDescription {
@@ -108,6 +115,12 @@ b=X-YZ:128
                 experimental: true,
                 bwtype: "YZ".to_owned(),
                 bandwidth: 128,
+            }),
+            time_descriptions: Vec1::new(TimeDescription {
+                timing: Timing {
+                    start_time: 3_034_423_619,
+                    stop_time: 3_042_462_419,
+                },
             }),
         };
 
