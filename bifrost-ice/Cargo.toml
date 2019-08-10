@@ -11,7 +11,7 @@ repository = "https://github.com/bifrost-rs/bifrost"
 readme = "README.md"
 
 [badges]
-azure-devops = { project = "bifrost-rs/Bifrost", pipeline = "bifrost-rs.bifrost", build = "3" }
+azure-devops = { project = "bifrost-rs/Bifrost", pipeline = "bifrost-rs.bifrost", build = "4" }
 travis-ci = { repository = "bifrost-rs/bifrost" }
 
 [dependencies]
