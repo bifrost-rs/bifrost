@@ -1,6 +1,5 @@
 # Bifrost ICE
 
-[![Build Status](https://dev.azure.com/bifrost-rs/Bifrost/_apis/build/status/bifrost-rs.bifrost?branchName=master)](https://dev.azure.com/bifrost-rs/Bifrost/_build/latest?definitionId=4&branchName=master)
 [![Build Status](https://travis-ci.com/bifrost-rs/bifrost.svg?branch=master)](https://travis-ci.com/bifrost-rs/bifrost)
 [![crates.io](https://img.shields.io/crates/v/bifrost-ice)](https://crates.io/crates/bifrost-ice)
 [![License](https://img.shields.io/crates/l/bifrost-ice)](#license)

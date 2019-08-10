@@ -1,17 +1,16 @@
 [package]
 name = "bifrost"
-version = "0.4.0-alpha.2"
+version = "0.4.0-alpha.3"
 authors = ["Zizheng Tai <me@zizheng.me>"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
 description = "Real-time media and data communication for Rust."
-documentation = "https://docs.rs/bifrost/0.4.0-alpha.2/bifrost"
+documentation = "https://docs.rs/bifrost/0.4.0-alpha.3/bifrost"
 homepage = "https://bifrost.rs"
 repository = "https://github.com/bifrost-rs/bifrost"
 readme = "README.md"
 
 [badges]
-azure-devops = { project = "bifrost-rs/Bifrost", pipeline = "bifrost-rs.bifrost", build = "4" }
 travis-ci = { repository = "bifrost-rs/bifrost" }
 
 [dependencies]
