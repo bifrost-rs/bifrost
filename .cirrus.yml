@@ -1,9 +1,9 @@
-task:
-  name: Linux
-  container:
-    image: rust:latest
-  build_script: cargo build --all-features --all-targets --all
-  test_script: cargo test --all-features --all-targets --all
+# task:
+#   name: Linux
+#   container:
+#     image: rust:latest
+#   build_script: cargo build --all-features --all-targets --all
+#   test_script: cargo test --all-features --all-targets --all
 
 task:
   name: Windows
@@ -13,22 +13,22 @@ task:
   env:
     PATH: $PATH;$USERPROFILE\.cargo\bin
   install_script:
-    - choco install vcredist2017 -y
+    - choco install visualstudio2017buildtools -y
     - curl -sSf -o rustup-init.exe https://win.rustup.rs
     - rustup-init.exe -y --default-toolchain stable
   build_script: cargo build --all-features --all-targets --all
   test_script: cargo test --all-features --all-targets --all
 
-task:
-  matrix:
-    - name: macOS
-      osx_instance:
-        image: mojave-base
-    - name: FreeBSD
-      freebsd_instance:
-        image: freebsd-12-0-release-amd64
-  env:
-    PATH: $PATH:$HOME/.cargo/bin
-  install_script: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
-  build_script: cargo build --all-features --all-targets --all
-  test_script: cargo test --all-features --all-targets --all
+# task:
+#   matrix:
+#     - name: macOS
+#       osx_instance:
+#         image: mojave-base
+#     - name: FreeBSD
+#       freebsd_instance:
+#         image: freebsd-12-0-release-amd64
+#   env:
+#     PATH: $PATH:$HOME/.cargo/bin
+#   install_script: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+#   build_script: cargo build --all-features --all-targets --all
+#   test_script: cargo test --all-features --all-targets --all
