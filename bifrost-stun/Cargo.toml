@@ -10,7 +10,4 @@ homepage = "https://bifrost.rs"
 repository = "https://github.com/bifrost-rs/bifrost"
 readme = "README.md"
 
-[badges]
-travis-ci = { repository = "bifrost-rs/bifrost" }
-
 [dependencies]

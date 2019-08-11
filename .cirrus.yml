@@ -1,39 +1,39 @@
-check_template: &CHECK_TEMPLATE
+# Common steps to build and test against the latest stable version of Rust
+test_stable_template: &TEST_STABLE_TEMPLATE
   add_components_script: rustup component add clippy rustfmt
   rustfmt_script: cargo fmt --all -- --check
   clippy_script: cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
   test_script: cargo test --all-features --all-targets --all
 
-# task:
-#   name: Linux
-#   container:
-#     image: rust:latest
-#   << : *CHECK_TEMPLATE
+# Linux
+task:
+  name: Linux
+  container:
+    image: rust:latest
+  << : *TEST_STABLE_TEMPLATE
 
+# Windows
 task:
   name: Windows
   windows_container:
     image: cirrusci/windowsservercore:cmake
-    os_version: 2019
   env:
     PATH: $PATH;$USERPROFILE\.cargo\bin
   install_script:
     - curl -sSf -o rustup-init.exe https://win.rustup.rs
     - rustup-init.exe -y --default-toolchain stable
-  echo_script:
-    - tree "C:\Program Files (x86)\Microsoft Visual Studio"
-  << : *CHECK_TEMPLATE
+  << : *TEST_STABLE_TEMPLATE
 
-# task:
-#   matrix:
-#     - name: macOS
-#       osx_instance:
-#         image: mojave-base
-#     - name: FreeBSD
-#       freebsd_instance:
-#         image: freebsd-12-0-release-amd64
-#   env:
-#     PATH: $PATH:$HOME/.cargo/bin
-#   install_script: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
-#   build_script: cargo build --all-features --all-targets --all
-#   test_script: cargo test --all-features --all-targets --all
+# macOS and FreeBSD
+task:
+  matrix:
+    - name: macOS
+      osx_instance:
+        image: mojave-base
+    - name: FreeBSD
+      freebsd_instance:
+        image: freebsd-12-0-release-amd64
+  env:
+    PATH: $PATH:$HOME/.cargo/bin
+  install_script: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+  << : *TEST_STABLE_TEMPLATE
