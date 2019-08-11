@@ -1,8 +1,8 @@
-check_template: &CHECK_TEMPLATE
-  add_components_script: rustup component add clippy rustfmt
-  rustfmt_script: cargo fmt --all -- --check
-  clippy_script: cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
-  test_script: cargo test --all-features --all-targets --all
+# check_template: &CHECK_TEMPLATE
+#   add_components_script: rustup component add clippy rustfmt
+#   rustfmt_script: cargo fmt --all -- --check
+#   clippy_script: cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
+#   test_script: cargo test --all-features --all-targets --all
 
 # task:
 #   name: Linux
@@ -19,10 +19,12 @@ task:
     PATH: $PATH;$USERPROFILE\.cargo\bin
   install_script:
     - choco install visualstudio2017buildtools -y
-    - curl -sSf -o rustup-init.exe https://win.rustup.rs
-    - rustup-init.exe -y --default-toolchain stable
-  echo_script: tree "C:\Program Files (x86)\Microsoft Visual Studio"
-  << : *CHECK_TEMPLATE
+    # - curl -sSf -o rustup-init.exe https://win.rustup.rs
+    # - rustup-init.exe -y --default-toolchain stable
+  echo_script:
+    - cd "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools"
+    - dir link.exe /s /p
+  # << : *CHECK_TEMPLATE
 
 # task:
 #   matrix:
