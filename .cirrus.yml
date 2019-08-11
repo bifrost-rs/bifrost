@@ -13,12 +13,11 @@ check_template: &CHECK_TEMPLATE
 task:
   name: Windows
   windows_container:
-    image: cirrusci/windowsservercore:2019
+    image: cirrusci/windowsservercore:cmake
     os_version: 2019
   env:
     PATH: $PATH;$USERPROFILE\.cargo\bin
   install_script:
-    - choco install visualstudio2017buildtools visualstudio2017-workload-vctools -y
     - curl -sSf -o rustup-init.exe https://win.rustup.rs
     - rustup-init.exe -y --default-toolchain stable
   echo_script:
