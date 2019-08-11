@@ -1,6 +1,6 @@
 task:
   name: Linux
-  continer:
+  container:
     image: rust:latest
   build_script: cargo build --all-features --all-targets --all
   test_script: cargo test --all-features --all-targets --all
