@@ -17,6 +17,7 @@ task:
   name: Windows
   windows_container:
     image: cirrusci/windowsservercore:cmake
+    os_version: 2019
   env:
     PATH: $PATH;$USERPROFILE\.cargo\bin
   install_script:
