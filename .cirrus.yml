@@ -1,9 +1,29 @@
-test_task:
-  matrix:
-    - container:
-        image: rust:latest
-    - allow_failures: true
-      container:
-        image: rustlang/rust:nightly
+task:
+  name: Linux
+  continer:
+    image: rust:latest
   build_script: cargo build --all-features --all-targets --all
   test_script: cargo test --all-features --all-targets --all
+
+task:
+  name: Windows
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+    os_version: 2019
+  install_script:
+    - curl -sSf -o rustup-init.exe https://win.rustup.rs
+    - rustup-init.exe -y --default-toolchain stable
+  build_script: cargo build --all-features --all-targets --all
+  test_script: cargo test --all-features --all-targets --all
+
+# test_task:
+#   matrix:
+#     - container:
+#         image: rust:latest
+#     -
+#     - osx_instance:
+#         image: mojave-base
+#     - freebsd_instance:
+#         image: freebsd-12-0-release-amd64
+#   build_script: cargo build --all-features --all-targets --all
+#   test_script: cargo test --all-features --all-targets --all
