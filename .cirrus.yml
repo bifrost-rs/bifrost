@@ -4,11 +4,11 @@ check_template: &CHECK_TEMPLATE
   clippy_script: cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
   test_script: cargo test --all-features --all-targets --all
 
-task:
-  name: Linux
-  container:
-    image: rust:latest
-  << : *CHECK_TEMPLATE
+# task:
+#   name: Linux
+#   container:
+#     image: rust:latest
+#   << : *CHECK_TEMPLATE
 
 task:
   name: Windows
@@ -21,6 +21,7 @@ task:
     - choco install visualstudio2017buildtools -y
     - curl -sSf -o rustup-init.exe https://win.rustup.rs
     - rustup-init.exe -y --default-toolchain stable
+  echo_script: tree "C:\Program Files (x86)\Microsoft Visual Studio"
   << : *CHECK_TEMPLATE
 
 # task:
