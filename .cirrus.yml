@@ -5,9 +5,5 @@ test_task:
     - allow_failures: true
       container:
         image: rustlang/rust:nightly
-  cargo_cache:
-    folder: $CARGO_HOME/registry
-    fingerprint_script: cat Cargo.lock
-  build_script: cargo build
-  test_script: cargo test
-  before_cache_script: rm -rf $CARGO_HOME/registry/index
+  build_script: cargo build --all-features --all-targets --all
+  test_script: cargo test --all-features --all-targets --all
