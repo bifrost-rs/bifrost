@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn test_vec1() {
-        use vec1::*;
+        use vec1::vec1;
 
         assert!(<Vec1<Test> as Parse>::parse("foo").is_err());
         assert_eq!(
