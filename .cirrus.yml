@@ -5,17 +5,19 @@ test_stable_template: &TEST_STABLE_TEMPLATE
   clippy_script: cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
   test_stable_script: cargo test --all-features --all-targets --all
 
+# Common steps to build and test against the latest nightly version of Rust
 test_nightly_template: &TEST_NIGHTLY_TEMPLATE
   test_nightly_script: cargo +nightly test --all-features --all-targets --all
 
 # Linux
 task:
-  name: Linux
   matrix:
-    - container:
+    - name: Linux (stable)
+      container:
         image: rust:latest
       <<: *TEST_STABLE_TEMPLATE
-    - container:
+    - name: Linux (nightly)
+      container:
         image: rustlang/rust:nightly
       <<: *TEST_NIGHTLY_TEMPLATE
 
