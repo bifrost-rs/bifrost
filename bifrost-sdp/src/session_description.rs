@@ -3,7 +3,7 @@ use vec1::Vec1;
 
 use crate::{
     Bandwidth, ConnectionData, EmailAddress, Information, Origin, Parse, PhoneNumber, SessionName,
-    TimeDescription, Uri, Version,
+    TimeDescription, TimeZones, Uri, Version,
 };
 
 /// A parsed SDP session description, defined in
@@ -20,6 +20,7 @@ pub struct SessionDescription {
     pub connection_data: Option<ConnectionData>,
     pub bandwidth: Option<Bandwidth>,
     pub time_descriptions: Vec1<TimeDescription>,
+    pub time_zones: Option<TimeZones>,
 }
 
 impl Parse for SessionDescription {
@@ -49,6 +50,7 @@ impl Parse for SessionDescription {
         let (rest, connection_data) = Parse::parse(rest)?;
         let (rest, bandwidth) = Parse::parse(rest)?;
         let (rest, time_descriptions) = Parse::parse(rest)?;
+        let (rest, time_zones) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -63,6 +65,7 @@ impl Parse for SessionDescription {
                 connection_data,
                 bandwidth,
                 time_descriptions,
+                time_zones,
             },
         ))
     }
@@ -73,7 +76,7 @@ mod tests {
     use vec1::vec1;
 
     use super::*;
-    use crate::{Duration, Instant, RepeatTimes, Timing};
+    use crate::{Duration, Instant, RepeatTimes, TimeZone, Timing};
 
     #[test]
     fn test_valid() {
@@ -88,6 +91,7 @@ b=X-YZ:128
 t=3034423618 3042462418
 t=3034423619 3042462419
 r=604800 3600 0 90000
+z=2882844526 -1h 2898848070 0
 "#;
 
         let expected = SessionDescription {
@@ -139,6 +143,16 @@ r=604800 3600 0 90000
                     }],
                 }
             ],
+            time_zones: Some(TimeZones(vec1![
+                TimeZone {
+                    adjustment_time: Instant::from_secs(2_882_844_526),
+                    offset: Duration::from_hours(-1),
+                },
+                TimeZone {
+                    adjustment_time: Instant::from_secs(2_898_848_070),
+                    offset: Duration::from_secs(0),
+                }
+            ])),
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();
