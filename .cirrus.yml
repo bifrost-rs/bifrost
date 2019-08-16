@@ -1,13 +1,19 @@
-# Common steps to build and test against the latest stable version of Rust
+# Build and test against the latest stable release of Rust
 test_stable_template: &TEST_STABLE_TEMPLATE
-  add_components_script: rustup component add clippy rustfmt
-  rustfmt_script: cargo fmt --all -- --check
-  clippy_script: cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
   test_stable_script: cargo test --all-features --all-targets --all
 
-# Common steps to build and test against the latest nightly version of Rust
+# Build and test against the latest nightly release of Rust
 test_nightly_template: &TEST_NIGHTLY_TEMPLATE
   test_nightly_script: cargo +nightly test --all-features --all-targets --all
+
+# Lint against the latest stable release of Rust
+style_lint_template: &STYLE_LINT_TEMPLATE
+  rustfmt_script:
+    - rustup componnet add rustfmt
+    - cargo fmt --all -- --check
+  clippy_script:
+    - rustup component add clippy
+    - cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
 
 # Linux
 task:
@@ -16,38 +22,36 @@ task:
       container:
         image: rust:latest
       <<: *TEST_STABLE_TEMPLATE
+      <<: *STYLE_LINT_TEMPLATE
     - name: Linux (nightly)
       container:
         image: rustlang/rust:nightly
+      allow_failures: true
       <<: *TEST_NIGHTLY_TEMPLATE
 
 # Windows
 task:
-  name: Windows
+  name: Windows (stable)
   windows_container:
     image: cirrusci/windowsservercore:cmake
     os_version: 2019
   env:
     PATH: $PATH;$USERPROFILE\.cargo\bin
-  install_stable_script:
+  install_script:
     - curl -sSf -o rustup-init.exe https://win.rustup.rs
     - rustup-init.exe -y --default-toolchain stable
-  install_nightly_script: rustup toolchain install nightly
   <<: *TEST_STABLE_TEMPLATE
-  <<: *TEST_NIGHTLY_TEMPLATE
 
 # macOS and FreeBSD
 task:
   matrix:
-    - name: macOS
+    - name: macOS (stable)
       osx_instance:
         image: mojave-base
-    - name: FreeBSD
+    - name: FreeBSD (stable)
       freebsd_instance:
         image: freebsd-12-0-release-amd64
   env:
     PATH: $PATH:$HOME/.cargo/bin
-  install_stable_script: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
-  install_nightly_script: rustup toolchain install nightly
+  install_script: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
   <<: *TEST_STABLE_TEMPLATE
-  <<: *TEST_NIGHTLY_TEMPLATE
