@@ -57,7 +57,7 @@ impl Parse for RepeatTimes {
 fn parse_time_field(input: &str) -> IResult<&str, u64> {
     let (rest, time) = map_res(digit1, str::parse)(input)?;
 
-    Ok(match rest.chars().nth(0) {
+    Ok(match rest.chars().next() {
         Some('d') => (&rest[1..], time * SECS_PER_DAY),
         Some('h') => (&rest[1..], time * SECS_PER_HOUR),
         Some('m') => (&rest[1..], time * SECS_PER_MIN),
