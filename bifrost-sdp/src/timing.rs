@@ -2,14 +2,14 @@ use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::IResult;
 
-use crate::{NtpTime, Parse};
+use crate::{Instant, Parse};
 
 /// A parsed timing line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.9).
 #[derive(Debug, PartialEq)]
 pub struct Timing {
-    pub start_time: NtpTime,
-    pub stop_time: NtpTime,
+    pub start_time: Instant,
+    pub stop_time: Instant,
 }
 
 impl Parse for Timing {
@@ -46,8 +46,8 @@ mod tests {
         assert_eq!(
             timing,
             Timing {
-                start_time: NtpTime::from_secs(123),
-                stop_time: NtpTime::from_secs(456),
+                start_time: Instant::from_secs(123),
+                stop_time: Instant::from_secs(456),
             }
         );
     }

@@ -33,7 +33,7 @@ mod tests {
     use vec1::vec1;
 
     use super::*;
-    use crate::NtpTime;
+    use crate::{Duration, Instant};
 
     #[test]
     fn test_valid() {
@@ -44,8 +44,8 @@ mod tests {
                 "more\n",
                 TimeDescription {
                     timing: Timing {
-                        start_time: NtpTime::from_secs(3_034_423_619),
-                        stop_time: NtpTime::from_secs(3_042_462_419),
+                        start_time: Instant::from_secs(3_034_423_619),
+                        stop_time: Instant::from_secs(3_042_462_419),
                     },
                     repeat_times: vec![],
                 }
@@ -60,13 +60,13 @@ mod tests {
                 "more\r\n",
                 TimeDescription {
                     timing: Timing {
-                        start_time: NtpTime::from_secs(3_034_423_619),
-                        stop_time: NtpTime::from_secs(3_042_462_419),
+                        start_time: Instant::from_secs(3_034_423_619),
+                        stop_time: Instant::from_secs(3_042_462_419),
                     },
                     repeat_times: vec![RepeatTimes {
-                        interval: NtpTime::from_secs(604_800),
-                        duration: NtpTime::from_secs(3600),
-                        offsets: vec1![NtpTime::from_secs(0), NtpTime::from_secs(90000)],
+                        interval: Duration::from_secs(604_800),
+                        duration: Duration::from_secs(3600),
+                        offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)],
                     }],
                 }
             ))
@@ -81,13 +81,13 @@ mod tests {
                 "more\r\n",
                 TimeDescription {
                     timing: Timing {
-                        start_time: NtpTime::from_secs(3_034_423_619),
-                        stop_time: NtpTime::from_secs(3_042_462_419),
+                        start_time: Instant::from_secs(3_034_423_619),
+                        stop_time: Instant::from_secs(3_042_462_419),
                     },
                     repeat_times: vec![RepeatTimes {
-                        interval: NtpTime::from_secs(604_800),
-                        duration: NtpTime::from_secs(3600),
-                        offsets: vec1![NtpTime::from_secs(0), NtpTime::from_secs(90000)],
+                        interval: Duration::from_secs(604_800),
+                        duration: Duration::from_secs(3600),
+                        offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)],
                     }],
                 }
             ))
@@ -103,19 +103,19 @@ mod tests {
                 "more\r\n",
                 TimeDescription {
                     timing: Timing {
-                        start_time: NtpTime::from_secs(3_034_423_619),
-                        stop_time: NtpTime::from_secs(3_042_462_419),
+                        start_time: Instant::from_secs(3_034_423_619),
+                        stop_time: Instant::from_secs(3_042_462_419),
                     },
                     repeat_times: vec![
                         RepeatTimes {
-                            interval: NtpTime::from_secs(604_800),
-                            duration: NtpTime::from_secs(3600),
-                            offsets: vec1![NtpTime::from_secs(0), NtpTime::from_secs(90000)],
+                            interval: Duration::from_secs(604_800),
+                            duration: Duration::from_secs(3600),
+                            offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)],
                         },
                         RepeatTimes {
-                            interval: NtpTime::from_secs(604_801),
-                            duration: NtpTime::from_secs(3601),
-                            offsets: vec1![NtpTime::from_secs(1), NtpTime::from_secs(90001)],
+                            interval: Duration::from_secs(604_801),
+                            duration: Duration::from_secs(3601),
+                            offsets: vec1![Duration::from_secs(1), Duration::from_secs(90001)],
                         }
                     ],
                 }
