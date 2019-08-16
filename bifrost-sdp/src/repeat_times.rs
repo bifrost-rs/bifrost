@@ -6,7 +6,7 @@ use vec1::Vec1;
 
 use crate::{Duration, Parse};
 
-/// A parsed repeat times field, defined in
+/// A parsed repeat times line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.10).
 #[derive(Debug, PartialEq)]
 pub struct RepeatTimes {

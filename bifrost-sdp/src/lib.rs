@@ -1,6 +1,7 @@
 mod bandwidth;
 mod connection_data;
 mod email_address;
+mod encryption_key;
 mod information;
 mod ntp;
 mod origin;
@@ -20,6 +21,7 @@ pub use crate::{
     bandwidth::Bandwidth,
     connection_data::ConnectionData,
     email_address::EmailAddress,
+    encryption_key::EncryptionKey,
     information::Information,
     ntp::{Duration, Instant},
     origin::Origin,
