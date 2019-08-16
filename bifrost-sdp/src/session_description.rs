@@ -2,8 +2,8 @@ use nom::IResult;
 use vec1::Vec1;
 
 use crate::{
-    Bandwidth, ConnectionData, EmailAddress, Information, Origin, Parse, PhoneNumber, SessionName,
-    TimeDescription, TimeZones, Uri, Version,
+    Bandwidth, ConnectionData, EmailAddress, EncryptionKey, Information, Origin, Parse,
+    PhoneNumber, SessionName, TimeDescription, TimeZones, Uri, Version,
 };
 
 /// A parsed SDP session description, defined in
@@ -21,6 +21,7 @@ pub struct SessionDescription {
     pub bandwidth: Option<Bandwidth>,
     pub time_descriptions: Vec1<TimeDescription>,
     pub time_zones: Option<TimeZones>,
+    pub encryption_key: Option<EncryptionKey>,
 }
 
 impl Parse for SessionDescription {
@@ -51,6 +52,7 @@ impl Parse for SessionDescription {
         let (rest, bandwidth) = Parse::parse(rest)?;
         let (rest, time_descriptions) = Parse::parse(rest)?;
         let (rest, time_zones) = Parse::parse(rest)?;
+        let (rest, encryption_key) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -66,6 +68,7 @@ impl Parse for SessionDescription {
                 bandwidth,
                 time_descriptions,
                 time_zones,
+                encryption_key,
             },
         ))
     }
@@ -153,6 +156,7 @@ z=2882844526 -1h 2898848070 0
                     offset: Duration::from_secs(0),
                 }
             ])),
+            encryption_key: None,
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();
