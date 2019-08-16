@@ -42,3 +42,43 @@ impl Parse for NtpTime {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_units() {
+        assert_eq!(NtpTime::from_days(42).to_secs(), 42 * 86400);
+        assert_eq!(NtpTime::from_hours(41).to_secs(), 41 * 3600);
+        assert_eq!(NtpTime::from_mins(40).to_secs(), 40 * 60);
+        assert_eq!(NtpTime::from_secs(39).to_secs(), 39);
+    }
+
+    #[test]
+    fn test_valid() {
+        assert_eq!(NtpTime::parse("42dx"), Ok(("x", NtpTime::from_days(42))));
+        assert_eq!(NtpTime::parse("41h "), Ok((" ", NtpTime::from_hours(41))));
+        assert_eq!(
+            NtpTime::parse("40m 41h"),
+            Ok((" 41h", NtpTime::from_mins(40)))
+        );
+        assert_eq!(
+            NtpTime::parse("39s\r\n"),
+            Ok(("\r\n", NtpTime::from_secs(39)))
+        );
+        assert_eq!(
+            NtpTime::parse("38 37\r\n"),
+            Ok((" 37\r\n", NtpTime::from_secs(38)))
+        );
+        assert_eq!(NtpTime::parse("37x"), Ok(("x", NtpTime::from_secs(37))));
+    }
+
+    #[test]
+    fn test_invalid() {
+        assert!(NtpTime::parse("s").is_err());
+        assert!(NtpTime::parse(" 42").is_err());
+        assert!(NtpTime::parse("").is_err());
+        assert!(NtpTime::parse(" ").is_err());
+    }
+}
