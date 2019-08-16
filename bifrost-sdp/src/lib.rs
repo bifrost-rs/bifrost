@@ -10,7 +10,6 @@ mod repeat_times;
 mod session_description;
 mod session_name;
 mod time_description;
-mod time_zones;
 mod timing;
 mod uri;
 mod util;
