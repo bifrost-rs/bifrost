@@ -73,7 +73,7 @@ mod tests {
     use vec1::vec1;
 
     use super::*;
-    use crate::{RepeatTimes, Timing};
+    use crate::{NtpTime, RepeatTimes, Timing};
 
     #[test]
     fn test_valid() {
@@ -122,20 +122,20 @@ r=604800 3600 0 90000
             time_descriptions: vec1![
                 TimeDescription {
                     timing: Timing {
-                        start_time: 3_034_423_618,
-                        stop_time: 3_042_462_418,
+                        start_time: NtpTime::from_secs(3_034_423_618),
+                        stop_time: NtpTime::from_secs(3_042_462_418),
                     },
                     repeat_times: vec![],
                 },
                 TimeDescription {
                     timing: Timing {
-                        start_time: 3_034_423_619,
-                        stop_time: 3_042_462_419,
+                        start_time: NtpTime::from_secs(3_034_423_619),
+                        stop_time: NtpTime::from_secs(3_042_462_419),
                     },
                     repeat_times: vec![RepeatTimes {
-                        interval: 604_800,
-                        duration: 3600,
-                        offsets: vec1![0, 90000],
+                        interval: NtpTime::from_secs(604_800),
+                        duration: NtpTime::from_secs(3600),
+                        offsets: vec1![NtpTime::from_secs(0), NtpTime::from_secs(90000)],
                     }],
                 }
             ],

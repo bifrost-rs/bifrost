@@ -1,23 +1,18 @@
 use nom::bytes::complete::tag;
-use nom::character::complete::{digit1, line_ending};
-use nom::combinator::map_res;
+use nom::character::complete::line_ending;
 use nom::multi::separated_nonempty_list;
 use nom::IResult;
 use vec1::Vec1;
 
-use crate::Parse;
-
-const SECS_PER_DAY: u64 = 86400;
-const SECS_PER_HOUR: u64 = 3600;
-const SECS_PER_MIN: u64 = 60;
+use crate::{NtpTime, Parse};
 
 /// A parsed repeat times field, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.10).
 #[derive(Debug, PartialEq)]
 pub struct RepeatTimes {
-    pub interval: u64,
-    pub duration: u64,
-    pub offsets: Vec1<u64>,
+    pub interval: NtpTime,
+    pub duration: NtpTime,
+    pub offsets: Vec1<NtpTime>,
 }
 
 impl Parse for RepeatTimes {
@@ -33,13 +28,13 @@ impl Parse for RepeatTimes {
 
         let (rest, _) = tag("r=")(input)?;
 
-        let (rest, interval) = parse_time_field(rest)?;
+        let (rest, interval) = Parse::parse(rest)?;
         let (rest, _) = tag(" ")(rest)?;
 
-        let (rest, duration) = parse_time_field(rest)?;
+        let (rest, duration) = Parse::parse(rest)?;
         let (rest, _) = tag(" ")(rest)?;
 
-        let (rest, offsets) = separated_nonempty_list(tag(" "), parse_time_field)(rest)?;
+        let (rest, offsets) = separated_nonempty_list(tag(" "), Parse::parse)(rest)?;
         let (rest, _) = line_ending(rest)?;
         let offsets = Vec1::try_from_vec(offsets).unwrap();
 
@@ -52,18 +47,6 @@ impl Parse for RepeatTimes {
             },
         ))
     }
-}
-
-fn parse_time_field(input: &str) -> IResult<&str, u64> {
-    let (rest, time) = map_res(digit1, str::parse)(input)?;
-
-    Ok(match rest.chars().next() {
-        Some('d') => (&rest[1..], time * SECS_PER_DAY),
-        Some('h') => (&rest[1..], time * SECS_PER_HOUR),
-        Some('m') => (&rest[1..], time * SECS_PER_MIN),
-        Some('s') => (&rest[1..], time),
-        _ => (rest, time),
-    })
 }
 
 #[cfg(test)]
@@ -79,9 +62,9 @@ mod tests {
             Ok((
                 "more",
                 RepeatTimes {
-                    interval: 1,
-                    duration: 2,
-                    offsets: vec1![3],
+                    interval: NtpTime::from_secs(1),
+                    duration: NtpTime::from_secs(2),
+                    offsets: vec1![NtpTime::from_secs(3)],
                 }
             ))
         );
@@ -91,9 +74,9 @@ mod tests {
             Ok((
                 "more",
                 RepeatTimes {
-                    interval: 1,
-                    duration: 2,
-                    offsets: vec1![3, 4],
+                    interval: NtpTime::from_secs(1),
+                    duration: NtpTime::from_secs(2),
+                    offsets: vec1![NtpTime::from_secs(3), NtpTime::from_secs(4)],
                 }
             ))
         );
@@ -103,9 +86,13 @@ mod tests {
             Ok((
                 "more",
                 RepeatTimes {
-                    interval: 1,
-                    duration: 2,
-                    offsets: vec1![3, 4, 5],
+                    interval: NtpTime::from_secs(1),
+                    duration: NtpTime::from_secs(2),
+                    offsets: vec1![
+                        NtpTime::from_secs(3),
+                        NtpTime::from_secs(4),
+                        NtpTime::from_secs(5)
+                    ],
                 }
             ))
         );
@@ -118,9 +105,9 @@ mod tests {
             Ok((
                 "more",
                 RepeatTimes {
-                    interval: SECS_PER_DAY,
-                    duration: 2 * SECS_PER_HOUR,
-                    offsets: vec1![3 * SECS_PER_MIN],
+                    interval: NtpTime::from_days(1),
+                    duration: NtpTime::from_hours(2),
+                    offsets: vec1![NtpTime::from_mins(3)],
                 }
             ))
         );
@@ -130,9 +117,9 @@ mod tests {
             Ok((
                 "more",
                 RepeatTimes {
-                    interval: SECS_PER_HOUR,
-                    duration: 2 * SECS_PER_MIN,
-                    offsets: vec1![3, 4 * SECS_PER_DAY],
+                    interval: NtpTime::from_hours(1),
+                    duration: NtpTime::from_mins(2),
+                    offsets: vec1![NtpTime::from_secs(3), NtpTime::from_days(4)],
                 }
             ))
         );
@@ -142,9 +129,13 @@ mod tests {
             Ok((
                 "more",
                 RepeatTimes {
-                    interval: SECS_PER_MIN,
-                    duration: 2,
-                    offsets: vec1![3 * SECS_PER_HOUR, 4, 5 * SECS_PER_DAY],
+                    interval: NtpTime::from_mins(1),
+                    duration: NtpTime::from_secs(2),
+                    offsets: vec1![
+                        NtpTime::from_hours(3),
+                        NtpTime::from_secs(4),
+                        NtpTime::from_days(5)
+                    ],
                 }
             ))
         );

@@ -2,6 +2,7 @@ mod bandwidth;
 mod connection_data;
 mod email_address;
 mod information;
+mod ntp_time;
 mod origin;
 mod parse;
 mod phone_number;
@@ -16,7 +17,8 @@ mod version;
 
 pub use crate::{
     bandwidth::Bandwidth, connection_data::ConnectionData, email_address::EmailAddress,
-    information::Information, origin::Origin, parse::Parse, phone_number::PhoneNumber,
-    repeat_times::RepeatTimes, session_description::SessionDescription, session_name::SessionName,
-    time_description::TimeDescription, timing::Timing, uri::Uri, version::Version,
+    information::Information, ntp_time::NtpTime, origin::Origin, parse::Parse,
+    phone_number::PhoneNumber, repeat_times::RepeatTimes, session_description::SessionDescription,
+    session_name::SessionName, time_description::TimeDescription, timing::Timing, uri::Uri,
+    version::Version,
 };
