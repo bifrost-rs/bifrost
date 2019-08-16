@@ -2,7 +2,7 @@ use nom::IResult;
 use vec1::Vec1;
 
 use crate::{
-    Bandwidth, ConnectionData, EmailAddress, EncryptionKey, Information, Origin, Parse,
+    Attribute, Bandwidth, ConnectionData, EmailAddress, EncryptionKey, Information, Origin, Parse,
     PhoneNumber, SessionName, TimeDescription, TimeZones, Uri, Version,
 };
 
@@ -22,6 +22,7 @@ pub struct SessionDescription {
     pub time_descriptions: Vec1<TimeDescription>,
     pub time_zones: Option<TimeZones>,
     pub encryption_key: Option<EncryptionKey>,
+    pub attributes: Vec<Attribute>,
 }
 
 impl Parse for SessionDescription {
@@ -53,6 +54,7 @@ impl Parse for SessionDescription {
         let (rest, time_descriptions) = Parse::parse(rest)?;
         let (rest, time_zones) = Parse::parse(rest)?;
         let (rest, encryption_key) = Parse::parse(rest)?;
+        let (rest, attributes) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -69,6 +71,7 @@ impl Parse for SessionDescription {
                 time_descriptions,
                 time_zones,
                 encryption_key,
+                attributes,
             },
         ))
     }
@@ -161,6 +164,10 @@ a=rtpmap:99 h263-1998/90000
                 }
             ])),
             encryption_key: None,
+            attributes: vec![Attribute {
+                name: "recvonly".to_owned(),
+                value: None,
+            }],
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();
