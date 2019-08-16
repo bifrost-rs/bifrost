@@ -41,7 +41,7 @@ mod tests {
             timing,
             Timing {
                 start_time: 123,
-                stop_time: 456
+                stop_time: 456,
             }
         );
     }

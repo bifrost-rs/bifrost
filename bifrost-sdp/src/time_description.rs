@@ -30,8 +30,6 @@ impl Parse for TimeDescription {
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
-
     use vec1::vec1;
 
     use super::*;
@@ -65,9 +63,9 @@ mod tests {
                         stop_time: 3_042_462_419,
                     },
                     repeat_times: vec![RepeatTimes {
-                        interval: Duration::from_secs(604_800),
-                        duration: Duration::from_secs(3600),
-                        offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)],
+                        interval: 604_800,
+                        duration: 3600,
+                        offsets: vec1![0, 90000],
                     }],
                 }
             ))
@@ -86,9 +84,9 @@ mod tests {
                         stop_time: 3_042_462_419,
                     },
                     repeat_times: vec![RepeatTimes {
-                        interval: Duration::from_secs(604_800),
-                        duration: Duration::from_secs(3600),
-                        offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)],
+                        interval: 604_800,
+                        duration: 3600,
+                        offsets: vec1![0, 90000],
                     }],
                 }
             ))
@@ -109,14 +107,14 @@ mod tests {
                     },
                     repeat_times: vec![
                         RepeatTimes {
-                            interval: Duration::from_secs(604_800),
-                            duration: Duration::from_secs(3600),
-                            offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)],
+                            interval: 604_800,
+                            duration: 3600,
+                            offsets: vec1![0, 90000],
                         },
                         RepeatTimes {
-                            interval: Duration::from_secs(604_801),
-                            duration: Duration::from_secs(3601),
-                            offsets: vec1![Duration::from_secs(1), Duration::from_secs(90001)],
+                            interval: 604_801,
+                            duration: 3601,
+                            offsets: vec1![1, 90001],
                         }
                     ],
                 }
