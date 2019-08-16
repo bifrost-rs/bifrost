@@ -10,6 +10,7 @@ mod repeat_times;
 mod session_description;
 mod session_name;
 mod time_description;
+mod time_zones;
 mod timing;
 mod uri;
 mod util;
@@ -28,6 +29,7 @@ pub use crate::{
     session_description::SessionDescription,
     session_name::SessionName,
     time_description::TimeDescription,
+    time_zones::{TimeZone, TimeZones},
     timing::Timing,
     uri::Uri,
     version::Version,

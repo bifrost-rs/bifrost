@@ -140,6 +140,18 @@ mod tests {
                 }
             ))
         );
+
+        assert_eq!(
+            RepeatTimes::parse("r=7d 1h 0 25h\r\nrest"),
+            Ok((
+                "rest",
+                RepeatTimes {
+                    interval: Duration::from_days(7),
+                    duration: Duration::from_hours(1),
+                    offsets: vec1![Duration::from_secs(0), Duration::from_hours(25)],
+                }
+            ))
+        )
     }
 
     #[test]
