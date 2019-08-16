@@ -2,7 +2,7 @@ use http::Uri;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::line_ending;
-use nom::combinator::{map_res, verify};
+use nom::combinator::map_res;
 use nom::IResult;
 
 use crate::Parse;
@@ -30,13 +30,13 @@ impl Parse for EncryptionKey {
 
 fn parse_clear(input: &str) -> IResult<&str, EncryptionKey> {
     let (rest, _) = tag("clear:")(input)?;
-    let (rest, key) = verify(is_not("\r\n"), |s: &str| !s.is_empty())(rest)?;
+    let (rest, key) = is_not("\r\n")(rest)?;
     Ok((rest, EncryptionKey::Clear(key.to_owned())))
 }
 
 fn parse_base64(input: &str) -> IResult<&str, EncryptionKey> {
     let (rest, _) = tag("base64:")(input)?;
-    let (rest, key) = verify(is_not("\r\n"), |s: &str| !s.is_empty())(rest)?;
+    let (rest, key) = is_not("\r\n")(rest)?;
     Ok((rest, EncryptionKey::Base64(key.to_owned())))
 }
 

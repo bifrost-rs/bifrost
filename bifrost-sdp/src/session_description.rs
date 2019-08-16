@@ -95,6 +95,10 @@ t=3034423618 3042462418
 t=3034423619 3042462419
 r=604800 3600 0 90000
 z=2882844526 -1h 2898848070 0
+a=recvonly
+m=audio 49170 RTP/AVP 0
+m=video 51372 RTP/AVP 99
+a=rtpmap:99 h263-1998/90000
 "#;
 
         let expected = SessionDescription {

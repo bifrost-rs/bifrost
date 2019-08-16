@@ -1,3 +1,4 @@
+mod attribute;
 mod bandwidth;
 mod connection_data;
 mod email_address;
@@ -18,6 +19,7 @@ mod util;
 mod version;
 
 pub use crate::{
+    attribute::Attribute,
     bandwidth::Bandwidth,
     connection_data::ConnectionData,
     email_address::EmailAddress,
