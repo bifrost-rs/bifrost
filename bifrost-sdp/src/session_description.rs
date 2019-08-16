@@ -87,6 +87,7 @@ u=http://www.example.com/seminars/sdp.pdf
 e=j.doe@example.com (Jane Doe)
 c=IN IP4 224.2.36.42/127
 b=X-YZ:128
+t=3034423618 3042462418
 t=3034423619 3042462419
 r=604800 3600 0 90000
 "#;
@@ -120,17 +121,26 @@ r=604800 3600 0 90000
                 bwtype: "YZ".to_owned(),
                 bandwidth: 128,
             }),
-            time_descriptions: Vec1::new(TimeDescription {
-                timing: Timing {
-                    start_time: 3_034_423_619,
-                    stop_time: 3_042_462_419,
+            time_descriptions: vec1![
+                TimeDescription {
+                    timing: Timing {
+                        start_time: 3_034_423_618,
+                        stop_time: 3_042_462_418,
+                    },
+                    repeat_times: vec![],
                 },
-                repeat_times: vec1![RepeatTimes {
-                    interval: Duration::from_secs(604_800),
-                    duration: Duration::from_secs(3600),
-                    offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)]
-                }],
-            }),
+                TimeDescription {
+                    timing: Timing {
+                        start_time: 3_034_423_619,
+                        stop_time: 3_042_462_419,
+                    },
+                    repeat_times: vec![RepeatTimes {
+                        interval: Duration::from_secs(604_800),
+                        duration: Duration::from_secs(3600),
+                        offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)],
+                    }],
+                }
+            ],
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();
