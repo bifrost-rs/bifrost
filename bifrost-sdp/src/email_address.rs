@@ -1,8 +1,7 @@
 use nom::combinator::map;
 use nom::IResult;
 
-use crate::util;
-use crate::Parse;
+use crate::{util, Parse};
 
 /// A parsed email address line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.6).

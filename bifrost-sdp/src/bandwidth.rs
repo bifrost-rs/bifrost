@@ -3,8 +3,7 @@ use nom::character::complete::alphanumeric1;
 use nom::combinator::map;
 use nom::IResult;
 
-use crate::util;
-use crate::Parse;
+use crate::{util, Parse};
 
 /// A parsed bandwidth line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.8).

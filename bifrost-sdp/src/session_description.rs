@@ -70,8 +70,12 @@ impl Parse for SessionDescription {
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
+    use vec1::vec1;
+
     use super::*;
-    use crate::Timing;
+    use crate::{RepeatTimes, Timing};
 
     #[test]
     fn test_valid() {
@@ -121,6 +125,11 @@ r=604800 3600 0 90000
                     start_time: 3_034_423_619,
                     stop_time: 3_042_462_419,
                 },
+                repeat_times: vec1![RepeatTimes {
+                    interval: Duration::from_secs(604_800),
+                    duration: Duration::from_secs(3600),
+                    offsets: vec1![Duration::from_secs(0), Duration::from_secs(90000)]
+                }],
             }),
         };
 

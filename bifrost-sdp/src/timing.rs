@@ -1,8 +1,7 @@
 use nom::bytes::complete::tag;
 use nom::IResult;
 
-use crate::util;
-use crate::Parse;
+use crate::{util, Parse};
 
 /// A parsed timing line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.9).
