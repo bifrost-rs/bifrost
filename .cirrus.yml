@@ -9,7 +9,7 @@ test_nightly_template: &TEST_NIGHTLY_TEMPLATE
 # Lint against the latest stable release of Rust
 style_lint_template: &STYLE_LINT_TEMPLATE
   rustfmt_script:
-    - rustup componnet add rustfmt
+    - rustup component add rustfmt
     - cargo fmt --all -- --check
   clippy_script:
     - rustup component add clippy
