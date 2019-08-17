@@ -29,7 +29,7 @@ impl Instant {
     }
 }
 
-impl Parse for Instant {
+impl<'a> Parse<'a> for Instant {
     fn parse(input: &str) -> IResult<&str, Self> {
         let (rest, time) = map_res(digit1, str::parse)(input)?;
 
@@ -68,7 +68,7 @@ impl Duration {
     }
 }
 
-impl Parse for Duration {
+impl<'a> Parse<'a> for Duration {
     fn parse(input: &str) -> IResult<&str, Self> {
         let (rest, sign) = match input.chars().next() {
             Some('+') => (&input[1..], true),

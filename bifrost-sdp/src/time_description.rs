@@ -10,7 +10,7 @@ pub struct TimeDescription {
     pub repeat_times: Vec<RepeatTimes>,
 }
 
-impl Parse for TimeDescription {
+impl<'a> Parse<'a> for TimeDescription {
     fn parse(input: &str) -> IResult<&str, Self> {
         // t=  (time the session is active)
         // r=* (zero or more repeat times)

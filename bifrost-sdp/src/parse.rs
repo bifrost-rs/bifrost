@@ -3,40 +3,41 @@ use nom::multi::{many0, many1};
 use nom::IResult;
 use vec1::Vec1;
 
-pub trait Parse: Sized {
-    fn parse(input: &str) -> IResult<&str, Self>;
+pub trait Parse<'a>: Sized {
+    fn parse(input: &'a str) -> IResult<&str, Self>;
 }
 
-impl<T: Parse> Parse for Option<T> {
-    fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a, T: Parse<'a>> Parse<'a> for Option<T> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         opt(T::parse)(input)
     }
 }
 
-impl<T: Parse> Parse for Vec<T> {
-    fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a, T: Parse<'a>> Parse<'a> for Vec<T> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         many0(T::parse)(input)
     }
 }
 
-impl<T: Parse> Parse for Vec1<T> {
-    fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a, T: Parse<'a>> Parse<'a> for Vec1<T> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         map_res(many1(T::parse), Self::try_from_vec)(input)
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use nom::bytes::complete::tag;
+    use nom::character::complete::digit1;
+    use vec1::vec1;
+
     use super::*;
 
     #[derive(Debug, PartialEq)]
     struct Test(i64);
 
-    impl Parse for Test {
+    impl<'a> Parse<'a> for Test {
         fn parse(input: &str) -> IResult<&str, Self> {
-            use nom::bytes::complete::tag;
-            use nom::character::complete::digit1;
-
             let (rest, x) = map_res(digit1, str::parse)(input)?;
             let (rest, _) = tag(".")(rest)?;
 
@@ -74,8 +75,6 @@ mod tests {
 
     #[test]
     fn test_vec1() {
-        use vec1::vec1;
-
         assert!(<Vec1<Test> as Parse>::parse("foo").is_err());
         assert_eq!(
             <Vec1<Test> as Parse>::parse("123.foo"),

@@ -1,18 +1,24 @@
 use http::Uri as HttpUri;
-use nom::combinator::{map, map_res};
+use nom::bytes::complete::{is_not, tag};
+use nom::character::complete::line_ending;
+use nom::combinator::map_res;
 use nom::IResult;
 
-use crate::{util, Parse};
+use crate::Parse;
 
 /// A parsed URI line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.5).
 #[derive(Debug, PartialEq)]
 pub struct Uri(pub HttpUri);
 
-impl Parse for Uri {
+impl<'a> Parse<'a> for Uri {
     fn parse(input: &str) -> IResult<&str, Self> {
         // u=<uri>
-        map(map_res(util::parse_nonempty_line("u="), str::parse), Self)(input)
+        let (rest, _) = tag("u=")(input)?;
+        let (rest, uri) = map_res(is_not("\r\n"), str::parse)(rest)?;
+        let (rest, _) = line_ending(rest)?;
+
+        Ok((rest, Self(uri)))
     }
 }
 

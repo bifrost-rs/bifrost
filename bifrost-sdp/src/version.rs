@@ -9,7 +9,7 @@ use crate::Parse;
 #[derive(Debug, PartialEq)]
 pub struct Version;
 
-impl Parse for Version {
+impl<'a> Parse<'a> for Version {
     fn parse(input: &str) -> IResult<&str, Self> {
         // v=0
         let (rest, _) = tag("v=0")(input)?;

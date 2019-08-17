@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use http::Uri;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
@@ -10,15 +12,15 @@ use crate::Parse;
 /// A parsed encryption key line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.12).
 #[derive(Debug, PartialEq)]
-pub enum EncryptionKey {
-    Clear(String),
-    Base64(String),
+pub enum EncryptionKey<'a> {
+    Clear(Cow<'a, str>),
+    Base64(Cow<'a, str>),
     Uri(Uri),
     Prompt,
 }
 
-impl Parse for EncryptionKey {
-    fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for EncryptionKey<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         // k=<method>
         // k=<method>:<encryption key>
         let (rest, _) = tag("k=")(input)?;
@@ -31,13 +33,13 @@ impl Parse for EncryptionKey {
 fn parse_clear(input: &str) -> IResult<&str, EncryptionKey> {
     let (rest, _) = tag("clear:")(input)?;
     let (rest, key) = is_not("\r\n")(rest)?;
-    Ok((rest, EncryptionKey::Clear(key.to_owned())))
+    Ok((rest, EncryptionKey::Clear(key.into())))
 }
 
 fn parse_base64(input: &str) -> IResult<&str, EncryptionKey> {
     let (rest, _) = tag("base64:")(input)?;
     let (rest, key) = is_not("\r\n")(rest)?;
-    Ok((rest, EncryptionKey::Base64(key.to_owned())))
+    Ok((rest, EncryptionKey::Base64(key.into())))
 }
 
 fn parse_uri(input: &str) -> IResult<&str, EncryptionKey> {
@@ -59,7 +61,7 @@ mod tests {
     fn test_clear() {
         assert_eq!(
             EncryptionKey::parse("k=clear:foo\r\nmore"),
-            Ok(("more", EncryptionKey::Clear("foo".to_owned())))
+            Ok(("more", EncryptionKey::Clear("foo".into())))
         );
         assert!(EncryptionKey::parse("k=clear\r\nmore").is_err());
         assert!(EncryptionKey::parse("k=clear:\r\nmore").is_err());
@@ -69,7 +71,7 @@ mod tests {
     fn test_base64() {
         assert_eq!(
             EncryptionKey::parse("k=base64:foo\r\nmore"),
-            Ok(("more", EncryptionKey::Base64("foo".to_owned())))
+            Ok(("more", EncryptionKey::Base64("foo".into())))
         );
         assert!(EncryptionKey::parse("k=base64\r\nmore").is_err());
         assert!(EncryptionKey::parse("k=base64:\r\nmore").is_err());

@@ -1,4 +1,6 @@
-use nom::combinator::map;
+use std::borrow::Cow;
+
+use nom::bytes::complete::tag;
 use nom::IResult;
 
 use crate::{util, Parse};
@@ -6,14 +8,14 @@ use crate::{util, Parse};
 /// A parsed email address line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.6).
 #[derive(Debug, PartialEq)]
-pub struct EmailAddress(pub String);
+pub struct EmailAddress<'a>(pub Cow<'a, str>);
 
-impl Parse for EmailAddress {
-    fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for EmailAddress<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         // e=<email-address>
-        map(util::parse_nonempty_line("e="), |value| {
-            Self(value.to_owned())
-        })(input)
+        let (rest, _) = tag("e=")(input)?;
+        let (rest, value) = util::parse_line(rest)?;
+        Ok((rest, Self(value)))
     }
 }
 
@@ -27,7 +29,7 @@ mod tests {
         let line = format!("e={}\nresto\r\n", email_addr_str);
         let (rest, email_addr) = EmailAddress::parse(&line).unwrap();
         assert_eq!(rest, "resto\r\n");
-        assert_eq!(email_addr, EmailAddress(email_addr_str.to_owned()));
+        assert_eq!(email_addr, EmailAddress(email_addr_str.into()));
     }
 
     #[test]

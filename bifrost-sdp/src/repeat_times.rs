@@ -15,7 +15,7 @@ pub struct RepeatTimes {
     pub offsets: Vec1<Duration>,
 }
 
-impl Parse for RepeatTimes {
+impl<'a> Parse<'a> for RepeatTimes {
     fn parse(input: &str) -> IResult<&str, Self> {
         // r=<repeat interval> <active duration> <offsets from start-time>
         //

@@ -1,4 +1,7 @@
+use std::borrow::Cow;
+
 use nom::bytes::complete::tag;
+use nom::character::complete::line_ending;
 use nom::IResult;
 
 use crate::{util, Parse};
@@ -6,19 +9,22 @@ use crate::{util, Parse};
 /// A parsed connection data line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.7).
 #[derive(Debug, PartialEq)]
-pub struct ConnectionData {
-    pub network_type: String,
-    pub address_type: String,
-    pub connection_address: String,
+pub struct ConnectionData<'a> {
+    pub network_type: Cow<'a, str>,
+    pub address_type: Cow<'a, str>,
+    pub connection_address: Cow<'a, str>,
 }
 
-impl Parse for ConnectionData {
-    fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for ConnectionData<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         // c=<nettype> <addrtype> <connection-address>
         let (rest, _) = tag("c=")(input)?;
-        let (rest, network_type) = util::parse_field(rest)?;
-        let (rest, address_type) = util::parse_field(rest)?;
-        let (rest, connection_address) = util::parse_last_field(rest)?;
+        let (rest, network_type) = util::parse_str_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+        let (rest, address_type) = util::parse_str_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+        let (rest, connection_address) = util::parse_str_field(rest)?;
+        let (rest, _) = line_ending(rest)?;
 
         Ok((
             rest,
@@ -43,9 +49,9 @@ mod tests {
         assert_eq!(
             c,
             ConnectionData {
-                network_type: "IN".to_owned(),
-                address_type: "IP4".to_owned(),
-                connection_address: "224.2.1.1/127/3".to_owned(),
+                network_type: "IN".into(),
+                address_type: "IP4".into(),
+                connection_address: "224.2.1.1/127/3".into(),
             }
         )
     }
