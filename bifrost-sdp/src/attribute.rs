@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::{line_ending, not_line_ending};
 use nom::combinator::opt;
@@ -10,13 +8,13 @@ use crate::Parse;
 /// A parsed attribute line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.13).
 #[derive(Debug, PartialEq)]
-pub struct Attribute<'a> {
-    pub name: Cow<'a, str>,
-    pub value: Option<Cow<'a, str>>,
+pub struct Attribute {
+    pub name: String,
+    pub value: Option<String>,
 }
 
-impl<'a> Parse<'a> for Attribute<'a> {
-    fn parse(input: &'a str) -> IResult<&str, Self> {
+impl Parse for Attribute {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // a=<attribute>
         // a=<attribute>:<value>
         let (rest, _) = tag("a=")(input)?;
@@ -27,8 +25,8 @@ impl<'a> Parse<'a> for Attribute<'a> {
         Ok((
             rest,
             Self {
-                name: name.into(),
-                value: value.map(Into::into),
+                name: name.to_owned(),
+                value: value.map(String::from),
             },
         ))
     }
@@ -50,7 +48,7 @@ mod tests {
             Ok((
                 "more",
                 Attribute {
-                    name: "foo".into(),
+                    name: "foo".to_owned(),
                     value: None,
                 }
             ))
@@ -61,7 +59,7 @@ mod tests {
             Ok((
                 "more",
                 Attribute {
-                    name: " f o o ".into(),
+                    name: " f o o ".to_owned(),
                     value: None,
                 }
             ))
@@ -75,8 +73,8 @@ mod tests {
             Ok((
                 "more",
                 Attribute {
-                    name: "foo".into(),
-                    value: Some("bar".into()),
+                    name: "foo".to_owned(),
+                    value: Some("bar".to_owned()),
                 }
             ))
         );
@@ -86,8 +84,8 @@ mod tests {
             Ok((
                 "more",
                 Attribute {
-                    name: "foo".into(),
-                    value: Some("b:ar ".into()),
+                    name: "foo".to_owned(),
+                    value: Some("b:ar ".to_owned()),
                 }
             ))
         );
@@ -97,8 +95,8 @@ mod tests {
             Ok((
                 "more",
                 Attribute {
-                    name: "foo".into(),
-                    value: Some("::".into()),
+                    name: "foo".to_owned(),
+                    value: Some("::".to_owned()),
                 }
             ))
         );
@@ -108,8 +106,8 @@ mod tests {
             Ok((
                 "more",
                 Attribute {
-                    name: "foo".into(),
-                    value: Some("".into()),
+                    name: "foo".to_owned(),
+                    value: Some("".to_owned()),
                 }
             ))
         );

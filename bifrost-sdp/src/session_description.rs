@@ -9,24 +9,24 @@ use crate::{
 /// A parsed SDP session description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
 #[derive(Debug, PartialEq)]
-pub struct SessionDescription<'a> {
+pub struct SessionDescription {
     pub version: Version,
-    pub origin: Origin<'a>,
-    pub session_name: SessionName<'a>,
-    pub session_information: Option<Information<'a>>,
+    pub origin: Origin,
+    pub session_name: SessionName,
+    pub session_information: Option<Information>,
     pub uri: Option<Uri>,
-    pub email_address: Option<EmailAddress<'a>>,
-    pub phone_number: Option<PhoneNumber<'a>>,
-    pub connection_data: Option<ConnectionData<'a>>,
-    pub bandwidth: Option<Bandwidth<'a>>,
+    pub email_address: Option<EmailAddress>,
+    pub phone_number: Option<PhoneNumber>,
+    pub connection_data: Option<ConnectionData>,
+    pub bandwidth: Option<Bandwidth>,
     pub time_descriptions: Vec1<TimeDescription>,
     pub time_zones: Option<TimeZones>,
-    pub encryption_key: Option<EncryptionKey<'a>>,
-    pub attributes: Vec<Attribute<'a>>,
+    pub encryption_key: Option<EncryptionKey>,
+    pub attributes: Vec<Attribute>,
 }
 
-impl<'a> Parse<'a> for SessionDescription<'a> {
-    fn parse(input: &'a str) -> IResult<&'a str, Self> {
+impl Parse for SessionDescription {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // v=  (protocol version)
         // o=  (originator and session identifier)
         // s=  (session name)
@@ -107,30 +107,30 @@ a=rtpmap:99 h263-1998/90000
         let expected = SessionDescription {
             version: Version,
             origin: Origin {
-                username: "jdoe".into(),
+                username: "jdoe".to_owned(),
                 session_id: 2_890_844_526,
                 session_version: 2_890_842_807,
-                network_type: "IN".into(),
-                address_type: "IP4".into(),
-                unicast_address: "10.47.16.5".into(),
+                network_type: "IN".to_owned(),
+                address_type: "IP4".to_owned(),
+                unicast_address: "10.47.16.5".to_owned(),
             },
-            session_name: SessionName("SDP Seminar".into()),
+            session_name: SessionName("SDP Seminar".to_owned()),
             session_information: Some(Information(
-                "A Seminar on the session description protocol".into(),
+                "A Seminar on the session description protocol".to_owned(),
             )),
             uri: Some(Uri("http://www.example.com/seminars/sdp.pdf"
                 .parse()
                 .unwrap())),
-            email_address: Some(EmailAddress("j.doe@example.com (Jane Doe)".into())),
+            email_address: Some(EmailAddress("j.doe@example.com (Jane Doe)".to_owned())),
             phone_number: None,
             connection_data: Some(ConnectionData {
-                network_type: "IN".into(),
-                address_type: "IP4".into(),
-                connection_address: "224.2.36.42/127".into(),
+                network_type: "IN".to_owned(),
+                address_type: "IP4".to_owned(),
+                connection_address: "224.2.36.42/127".to_owned(),
             }),
             bandwidth: Some(Bandwidth {
                 experimental: true,
-                bwtype: "YZ".into(),
+                bwtype: "YZ".to_owned(),
                 bandwidth: 128,
             }),
             time_descriptions: vec1![
@@ -165,7 +165,7 @@ a=rtpmap:99 h263-1998/90000
             ])),
             encryption_key: None,
             attributes: vec![Attribute {
-                name: "recvonly".into(),
+                name: "recvonly".to_owned(),
                 value: None,
             }],
         };

@@ -1,6 +1,4 @@
-use std::borrow::Cow;
-
-use nom::bytes::complete::tag;
+use nom::combinator::map;
 use nom::IResult;
 
 use crate::{util, Parse};
@@ -8,14 +6,14 @@ use crate::{util, Parse};
 /// A parsed session name line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.3).
 #[derive(Debug, PartialEq)]
-pub struct SessionName<'a>(pub Cow<'a, str>);
+pub struct SessionName(pub String);
 
-impl<'a> Parse<'a> for SessionName<'a> {
-    fn parse(input: &'a str) -> IResult<&str, Self> {
+impl Parse for SessionName {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // s=<session name>
-        let (rest, _) = tag("s=")(input)?;
-        let (rest, value) = util::parse_line(rest)?;
-        Ok((rest, Self(value)))
+        map(util::parse_nonempty_line("s="), |value| {
+            Self(value.to_owned())
+        })(input)
     }
 }
 

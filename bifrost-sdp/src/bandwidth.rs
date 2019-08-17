@@ -1,7 +1,6 @@
-use std::borrow::Cow;
-
 use nom::bytes::complete::tag;
-use nom::character::complete::{alphanumeric1, line_ending};
+use nom::character::complete::alphanumeric1;
+use nom::combinator::map;
 use nom::IResult;
 
 use crate::{util, Parse};
@@ -9,30 +8,28 @@ use crate::{util, Parse};
 /// A parsed bandwidth line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.8).
 #[derive(Debug, PartialEq)]
-pub struct Bandwidth<'a> {
+pub struct Bandwidth {
     pub experimental: bool,
-    pub bwtype: Cow<'a, str>,
+    pub bwtype: String,
     pub bandwidth: u64,
 }
 
-impl<'a> Parse<'a> for Bandwidth<'a> {
-    fn parse(input: &'a str) -> IResult<&str, Self> {
-        // b=<bwtype>:<bandwidth>
+impl Parse for Bandwidth {
+    fn parse(input: &str) -> IResult<&str, Self> {
         let (rest, _) = tag("b=")(input)?;
 
         let experimental = rest.starts_with("X-");
         let rest = if experimental { &rest[2..] } else { rest };
 
-        let (rest, bwtype) = alphanumeric1(rest)?;
+        let (rest, bwtype) = map(alphanumeric1, String::from)(rest)?;
         let (rest, _) = tag(":")(rest)?;
-        let (rest, bandwidth) = util::parse_field(rest)?;
-        let (rest, _) = line_ending(rest)?;
+        let (rest, bandwidth) = util::parse_last_field(rest)?;
 
         Ok((
             rest,
             Self {
                 experimental,
-                bwtype: bwtype.into(),
+                bwtype,
                 bandwidth,
             },
         ))
@@ -52,7 +49,7 @@ mod tests {
             bandwidth,
             Bandwidth {
                 experimental: false,
-                bwtype: "CT".into(),
+                bwtype: "CT".to_owned(),
                 bandwidth: 256,
             }
         )
@@ -67,7 +64,7 @@ mod tests {
             bandwidth,
             Bandwidth {
                 experimental: true,
-                bwtype: "AB".into(),
+                bwtype: "AB".to_owned(),
                 bandwidth: 512,
             }
         )

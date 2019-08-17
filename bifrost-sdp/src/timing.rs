@@ -12,7 +12,7 @@ pub struct Timing {
     pub stop_time: Instant,
 }
 
-impl<'a> Parse<'a> for Timing {
+impl Parse for Timing {
     fn parse(input: &str) -> IResult<&str, Self> {
         // t=<start-time> <stop-time>
 

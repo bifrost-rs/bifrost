@@ -1,6 +1,4 @@
-use std::borrow::Cow;
-
-use nom::bytes::complete::tag;
+use nom::combinator::map;
 use nom::IResult;
 
 use crate::{util, Parse};
@@ -8,14 +6,14 @@ use crate::{util, Parse};
 /// A parsed phone number line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.6).
 #[derive(Debug, PartialEq)]
-pub struct PhoneNumber<'a>(pub Cow<'a, str>);
+pub struct PhoneNumber(pub String);
 
-impl<'a> Parse<'a> for PhoneNumber<'a> {
-    fn parse(input: &'a str) -> IResult<&str, Self> {
+impl Parse for PhoneNumber {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // p=<phone-number>
-        let (rest, _) = tag("p=")(input)?;
-        let (rest, value) = util::parse_line(rest)?;
-        Ok((rest, Self(value)))
+        map(util::parse_nonempty_line("p="), |value| {
+            Self(value.to_owned())
+        })(input)
     }
 }
 
@@ -29,7 +27,7 @@ mod tests {
         let line = format!("p={}\nresto\r\n", phone_number_str);
         let (rest, phone_number) = PhoneNumber::parse(&line).unwrap();
         assert_eq!(rest, "resto\r\n");
-        assert_eq!(phone_number, PhoneNumber(phone_number_str.into()));
+        assert_eq!(phone_number, PhoneNumber(phone_number_str.to_owned()));
     }
 
     #[test]

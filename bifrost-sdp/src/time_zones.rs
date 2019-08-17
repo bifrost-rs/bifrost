@@ -11,7 +11,7 @@ use crate::{Duration, Instant, Parse};
 #[derive(Debug, PartialEq)]
 pub struct TimeZones(pub Vec1<TimeZone>);
 
-impl<'a> Parse<'a> for TimeZones {
+impl Parse for TimeZones {
     fn parse(input: &str) -> IResult<&str, Self> {
         // z=<adjustment time> <offset> <adjustment time> <offset> ....
         let (rest, _) = tag("z=")(input)?;
@@ -30,7 +30,7 @@ pub struct TimeZone {
     pub offset: Duration,
 }
 
-impl<'a> Parse<'a> for TimeZone {
+impl Parse for TimeZone {
     fn parse(input: &str) -> IResult<&str, Self> {
         // <adjustment time> <offset>
         let (rest, adjustment_time) = Parse::parse(input)?;
