@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::combinator::map;
 use nom::IResult;
 
@@ -7,6 +9,12 @@ use crate::{util, Parse};
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.4).
 #[derive(Clone, Debug, PartialEq)]
 pub struct Information(pub String);
+
+impl fmt::Display for Information {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "i={}\r", self.0)
+    }
+}
 
 impl Parse for Information {
     fn parse(input: &str) -> IResult<&str, Self> {
@@ -19,13 +27,16 @@ impl Parse for Information {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Information;
+    use crate::test_util::assert_parse_display;
 
     #[test]
     fn test_valid() {
-        let s = "i=test info\r\nrest\n";
-        let (rest, Information(info)) = Information::parse(s).unwrap();
-        assert_eq!(rest, "rest\n");
-        assert_eq!(info, "test info");
+        assert_parse_display(
+            "i=test info\nrest\n",
+            "rest\n",
+            &Information("test info".to_owned()),
+            "i=test info\r\n",
+        );
     }
 }
