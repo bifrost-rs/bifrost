@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::combinator::map;
 use nom::IResult;
 
@@ -7,6 +9,12 @@ use crate::{util, Parse};
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.6).
 #[derive(Clone, Debug, PartialEq)]
 pub struct PhoneNumber(pub String);
+
+impl fmt::Display for PhoneNumber {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "p={}\r", self.0)
+    }
+}
 
 impl Parse for PhoneNumber {
     fn parse(input: &str) -> IResult<&str, Self> {
@@ -20,19 +28,22 @@ impl Parse for PhoneNumber {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid() {
-        let phone_number_str = "+1 617 555-6011";
-        let line = format!("p={}\nresto\r\n", phone_number_str);
-        let (rest, phone_number) = PhoneNumber::parse(&line).unwrap();
-        assert_eq!(rest, "resto\r\n");
-        assert_eq!(phone_number, PhoneNumber(phone_number_str.to_owned()));
+        let phone_number = "+1 617 555-6011";
+        assert_parse_display(
+            &format!("p={}\n\nresto\r\n", phone_number),
+            "\nresto\r\n",
+            &PhoneNumber(phone_number.to_owned()),
+            &format!("p={}\r\n", phone_number),
+        );
     }
 
     #[test]
     fn test_invalid() {
-        assert!(PhoneNumber::parse("p=\r\n").is_err());
-        assert!(PhoneNumber::parse("x=+1 617 555-6011\r\n").is_err());
+        assert_err::<PhoneNumber>("p=\r\n");
+        assert_err::<PhoneNumber>("x=+1 617 555-6011\r\n");
     }
 }
