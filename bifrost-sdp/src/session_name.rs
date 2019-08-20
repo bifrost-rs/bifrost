@@ -27,7 +27,7 @@ impl Parse for SessionName {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::SessionName;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
