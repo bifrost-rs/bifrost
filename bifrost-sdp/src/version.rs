@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::IResult;
@@ -8,6 +10,12 @@ use crate::Parse;
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.1).
 #[derive(Clone, Debug, PartialEq)]
 pub struct Version;
+
+impl fmt::Display for Version {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "v=0\r")
+    }
+}
 
 impl Parse for Version {
     fn parse(input: &str) -> IResult<&str, Self> {
@@ -20,26 +28,27 @@ impl Parse for Version {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Version;
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid() {
-        assert!(Version::parse("v=0\r\n").is_ok());
-        assert!(Version::parse("v=0\n").is_ok());
+        assert_parse_display("v=0\r\nmore", "more", &Version, "v=0\r\n");
+        assert_parse_display("v=0\nrest\n", "rest\n", &Version, "v=0\r\n");
     }
 
     #[test]
     fn test_unsupported_version() {
-        assert!(Version::parse("v=1\r\n").is_err());
+        assert_err::<Version>("v=1\r\n");
     }
 
     #[test]
     fn test_bad_format() {
-        assert!(Version::parse("v =0\r\n").is_err());
-        assert!(Version::parse("v=0 \r\n").is_err());
-        assert!(Version::parse("v=0\r").is_err());
-        assert!(Version::parse("v=\r\n").is_err());
-        assert!(Version::parse("v=0 1\r\n").is_err());
-        assert!(Version::parse("v=x\r\n").is_err());
+        assert_err::<Version>("v =0\r\n");
+        assert_err::<Version>("v=0 \r\n");
+        assert_err::<Version>("v=0\r");
+        assert_err::<Version>("v=\r\n");
+        assert_err::<Version>("v=0 1\r\n");
+        assert_err::<Version>("v=x\r\n");
     }
 }

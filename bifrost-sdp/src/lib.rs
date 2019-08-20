@@ -20,6 +20,9 @@ mod uri;
 mod util;
 mod version;
 
+#[cfg(test)]
+mod test_util;
+
 pub use crate::{
     attribute::Attribute,
     bandwidth::Bandwidth,
