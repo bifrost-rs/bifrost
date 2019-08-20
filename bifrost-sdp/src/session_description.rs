@@ -2,8 +2,9 @@ use nom::IResult;
 use vec1::Vec1;
 
 use crate::{
-    Attribute, Bandwidth, ConnectionData, EmailAddress, EncryptionKey, Information, Origin, Parse,
-    PhoneNumber, SessionName, TimeDescription, TimeZones, Uri, Version,
+    Attribute, Bandwidth, ConnectionData, EmailAddress, EncryptionKey, Information,
+    MediaDescription, Origin, Parse, PhoneNumber, SessionName, TimeDescription, TimeZones, Uri,
+    Version,
 };
 
 /// A parsed SDP session description, defined in
@@ -23,6 +24,7 @@ pub struct SessionDescription {
     pub time_zones: Option<TimeZones>,
     pub encryption_key: Option<EncryptionKey>,
     pub attributes: Vec<Attribute>,
+    pub media_descriptions: Vec<MediaDescription>,
 }
 
 impl Parse for SessionDescription {
@@ -55,6 +57,7 @@ impl Parse for SessionDescription {
         let (rest, time_zones) = Parse::parse(rest)?;
         let (rest, encryption_key) = Parse::parse(rest)?;
         let (rest, attributes) = Parse::parse(rest)?;
+        let (rest, media_descriptions) = Parse::parse(rest)?;
 
         Ok((
             rest,
@@ -72,6 +75,7 @@ impl Parse for SessionDescription {
                 time_zones,
                 encryption_key,
                 attributes,
+                media_descriptions,
             },
         ))
     }
@@ -82,7 +86,7 @@ mod tests {
     use vec1::vec1;
 
     use super::*;
-    use crate::{Duration, Instant, RepeatTimes, TimeZone, Timing};
+    use crate::{Duration, Instant, MediaInformation, RepeatTimes, TimeZone, Timing};
 
     #[test]
     fn test_valid() {
@@ -168,6 +172,37 @@ a=rtpmap:99 h263-1998/90000
                 name: "recvonly".to_owned(),
                 value: None,
             }],
+            media_descriptions: vec![
+                MediaDescription {
+                    media_information: MediaInformation {
+                        media_type: "audio".to_owned(),
+                        port: "49170".to_owned(),
+                        proto: "RTP/AVP".to_owned(),
+                        formats: vec1!["0".to_owned()],
+                    },
+                    media_title: None,
+                    connection_data: None,
+                    bandwidths: vec![],
+                    encryption_key: None,
+                    attributes: vec![],
+                },
+                MediaDescription {
+                    media_information: MediaInformation {
+                        media_type: "video".to_owned(),
+                        port: "51372".to_owned(),
+                        proto: "RTP/AVP".to_owned(),
+                        formats: vec1!["99".to_owned()],
+                    },
+                    media_title: None,
+                    connection_data: None,
+                    bandwidths: vec![],
+                    encryption_key: None,
+                    attributes: vec![Attribute {
+                        name: "rtpmap".to_owned(),
+                        value: Some("99 h263-1998/90000".to_owned()),
+                    }],
+                },
+            ],
         };
 
         let (_, sdp) = SessionDescription::parse(s).unwrap();
