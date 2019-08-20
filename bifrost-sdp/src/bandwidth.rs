@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::{alphanumeric1, line_ending};
 use nom::IResult;
@@ -11,6 +13,18 @@ pub struct Bandwidth {
     pub experimental: bool,
     pub bwtype: String,
     pub bandwidth: u64,
+}
+
+impl fmt::Display for Bandwidth {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(
+            f,
+            "b={}{}:{}\r",
+            if self.experimental { "X-" } else { "" },
+            self.bwtype,
+            self.bandwidth
+        )
+    }
 }
 
 impl Parse for Bandwidth {
@@ -41,40 +55,39 @@ impl Parse for Bandwidth {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid() {
-        let s = "b=CT:256\r\nmore\r\n";
-        let (rest, bandwidth) = Bandwidth::parse(s).unwrap();
-        assert_eq!(rest, "more\r\n");
-        assert_eq!(
-            bandwidth,
-            Bandwidth {
+        assert_parse_display(
+            "b=CT:256\r\nmore\r\n",
+            "more\r\n",
+            &Bandwidth {
                 experimental: false,
                 bwtype: "CT".to_owned(),
                 bandwidth: 256,
-            }
-        )
+            },
+            "b=CT:256\r\n",
+        );
     }
 
     #[test]
     fn test_experimental() {
-        let s = "b=X-AB:512\r\n";
-        let (rest, bandwidth) = Bandwidth::parse(s).unwrap();
-        assert_eq!(rest, "");
-        assert_eq!(
-            bandwidth,
-            Bandwidth {
+        assert_parse_display(
+            "b=X-AB:512\r\n",
+            "",
+            &Bandwidth {
                 experimental: true,
                 bwtype: "AB".to_owned(),
                 bandwidth: 512,
-            }
-        )
+            },
+            "b=X-AB:512\r\n",
+        );
     }
 
     #[test]
     fn test_invalid() {
-        assert!(Bandwidth::parse("b=A-AB:512\r\n").is_err());
-        assert!(Bandwidth::parse("b=AB:foo\r\n").is_err());
+        assert_err::<Bandwidth>("b=A-AB:512\r\n");
+        assert_err::<Bandwidth>("b=AB:foo\r\n");
     }
 }
