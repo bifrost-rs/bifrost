@@ -1,4 +1,5 @@
 use nom::bytes::complete::tag;
+use nom::character::complete::line_ending;
 use nom::IResult;
 
 use crate::{util, Parse};
@@ -19,12 +20,24 @@ impl Parse for Origin {
     fn parse(input: &str) -> IResult<&str, Self> {
         // o=<username> <sess-id> <sess-version> <nettype> <addrtype> <unicast-address>
         let (rest, _) = tag("o=")(input)?;
+
         let (rest, username) = util::parse_field(rest)?;
-        let (rest, session_id) = util::parse_field(rest)?;
-        let (rest, session_version) = util::parse_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+
+        let (rest, session_id) = util::try_parse_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+
+        let (rest, session_version) = util::try_parse_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+
         let (rest, network_type) = util::parse_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+
         let (rest, address_type) = util::parse_field(rest)?;
-        let (rest, unicast_address) = util::parse_last_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+
+        let (rest, unicast_address) = util::parse_field(rest)?;
+        let (rest, _) = line_ending(rest)?;
 
         Ok((
             rest,

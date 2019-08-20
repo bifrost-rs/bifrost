@@ -1,4 +1,5 @@
 use nom::bytes::complete::tag;
+use nom::character::complete::line_ending;
 use nom::IResult;
 
 use crate::{util, Parse};
@@ -16,9 +17,15 @@ impl Parse for ConnectionData {
     fn parse(input: &str) -> IResult<&str, Self> {
         // c=<nettype> <addrtype> <connection-address>
         let (rest, _) = tag("c=")(input)?;
+
         let (rest, network_type) = util::parse_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+
         let (rest, address_type) = util::parse_field(rest)?;
-        let (rest, connection_address) = util::parse_last_field(rest)?;
+        let (rest, _) = tag(" ")(rest)?;
+
+        let (rest, connection_address) = util::parse_field(rest)?;
+        let (rest, _) = line_ending(rest)?;
 
         Ok((
             rest,

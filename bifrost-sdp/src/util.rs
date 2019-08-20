@@ -5,9 +5,15 @@ use nom::character::complete::line_ending;
 use nom::combinator::{map, map_res};
 use nom::IResult;
 
-/// Parses the input until reaching a whitespace or a newline.
-pub fn parse_raw_field<'a, T: From<&'a str>>(input: &'a str) -> IResult<&str, T> {
+/// Parses the input until a whitespace or a newline.
+pub fn parse_field<'a, T: From<&'a str>>(input: &'a str) -> IResult<&str, T> {
     map(is_not(" \r\n"), Into::into)(input)
+}
+
+/// Parses the input until a whitespace or a newline, and tries to convert the
+/// parsed string to a `T`.
+pub fn try_parse_field<T: FromStr>(input: &str) -> IResult<&str, T> {
+    map_res(is_not(" \r\n"), FromStr::from_str)(input)
 }
 
 pub fn parse_nonempty_line(type_tag: &str) -> impl Fn(&str) -> IResult<&str, &str> + '_ {
@@ -17,16 +23,4 @@ pub fn parse_nonempty_line(type_tag: &str) -> impl Fn(&str) -> IResult<&str, &st
         let (rest, _) = line_ending(rest)?;
         Ok((rest, value))
     }
-}
-
-pub fn parse_field<T: FromStr>(input: &str) -> IResult<&str, T> {
-    let (rest, value) = map_res(is_not(" \r\n"), FromStr::from_str)(input)?;
-    let (rest, _) = tag(" ")(rest)?;
-    Ok((rest, value))
-}
-
-pub fn parse_last_field<T: FromStr>(input: &str) -> IResult<&str, T> {
-    let (rest, value) = map_res(is_not(" \r\n"), FromStr::from_str)(input)?;
-    let (rest, _) = line_ending(rest)?;
-    Ok((rest, value))
 }

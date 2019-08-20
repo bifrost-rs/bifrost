@@ -1,6 +1,5 @@
 use nom::bytes::complete::tag;
-use nom::character::complete::alphanumeric1;
-use nom::combinator::map;
+use nom::character::complete::{alphanumeric1, line_ending};
 use nom::IResult;
 
 use crate::{util, Parse};
@@ -16,20 +15,23 @@ pub struct Bandwidth {
 
 impl Parse for Bandwidth {
     fn parse(input: &str) -> IResult<&str, Self> {
+        // b=<bwtype>:<bandwidth>
         let (rest, _) = tag("b=")(input)?;
 
         let experimental = rest.starts_with("X-");
         let rest = if experimental { &rest[2..] } else { rest };
 
-        let (rest, bwtype) = map(alphanumeric1, String::from)(rest)?;
+        let (rest, bwtype) = alphanumeric1(rest)?;
         let (rest, _) = tag(":")(rest)?;
-        let (rest, bandwidth) = util::parse_last_field(rest)?;
+
+        let (rest, bandwidth) = util::try_parse_field(rest)?;
+        let (rest, _) = line_ending(rest)?;
 
         Ok((
             rest,
             Self {
                 experimental,
-                bwtype,
+                bwtype: bwtype.to_owned(),
                 bandwidth,
             },
         ))

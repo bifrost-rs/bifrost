@@ -21,16 +21,16 @@ impl Parse for MediaInformation {
         // m=<media> <port> <proto> <fmt> ...
         let (rest, _) = tag("m=")(input)?;
 
-        let (rest, media_type) = util::parse_raw_field(rest)?;
+        let (rest, media_type) = util::parse_field(rest)?;
         let (rest, _) = tag(" ")(rest)?;
 
-        let (rest, port) = util::parse_raw_field(rest)?;
+        let (rest, port) = util::parse_field(rest)?;
         let (rest, _) = tag(" ")(rest)?;
 
-        let (rest, proto) = util::parse_raw_field(rest)?;
+        let (rest, proto) = util::parse_field(rest)?;
         let (rest, _) = tag(" ")(rest)?;
 
-        let (rest, formats) = separated_nonempty_list(tag(" "), util::parse_raw_field)(rest)?;
+        let (rest, formats) = separated_nonempty_list(tag(" "), util::parse_field)(rest)?;
         let formats = Vec1::try_from_vec(formats).unwrap();
         let (rest, _) = line_ending(rest)?;
 
