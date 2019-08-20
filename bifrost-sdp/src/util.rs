@@ -2,8 +2,13 @@ use std::str::FromStr;
 
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::line_ending;
-use nom::combinator::map_res;
+use nom::combinator::{map, map_res};
 use nom::IResult;
+
+/// Parses the input until reaching a whitespace or a newline.
+pub fn parse_raw_field<'a, T: From<&'a str>>(input: &'a str) -> IResult<&str, T> {
+    map(is_not(" \r\n"), Into::into)(input)
+}
 
 pub fn parse_nonempty_line(type_tag: &str) -> impl Fn(&str) -> IResult<&str, &str> + '_ {
     move |input| {
