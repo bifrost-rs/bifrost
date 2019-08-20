@@ -5,7 +5,7 @@ use crate::{util, Parse};
 
 /// A parsed phone number line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.6).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct PhoneNumber(pub String);
 
 impl Parse for PhoneNumber {

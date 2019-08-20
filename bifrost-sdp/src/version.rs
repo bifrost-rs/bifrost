@@ -6,7 +6,7 @@ use crate::Parse;
 
 /// A parsed protocal version line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.1).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Version;
 
 impl Parse for Version {

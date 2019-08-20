@@ -4,7 +4,7 @@ use nom::IResult;
 
 use crate::Parse;
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Instant(u64);
 
 impl Instant {
@@ -43,7 +43,7 @@ impl Parse for Instant {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Duration(i64);
 
 impl Duration {

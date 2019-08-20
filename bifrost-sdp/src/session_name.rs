@@ -5,7 +5,7 @@ use crate::{util, Parse};
 
 /// A parsed session name line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.3).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct SessionName(pub String);
 
 impl Parse for SessionName {

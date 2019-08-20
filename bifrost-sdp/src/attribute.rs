@@ -7,7 +7,7 @@ use crate::Parse;
 
 /// A parsed attribute line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.13).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Attribute {
     pub name: String,
     pub value: Option<String>,

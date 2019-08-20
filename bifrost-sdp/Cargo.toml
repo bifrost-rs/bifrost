@@ -14,3 +14,6 @@ readme = "README.md"
 http = "0.1"
 nom = "5.0"
 vec1 = "1.4"
+
+[dev-dependencies]
+lazy_static = "1.3"

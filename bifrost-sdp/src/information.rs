@@ -5,7 +5,7 @@ use crate::{util, Parse};
 
 /// A parsed information line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.4).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Information(pub String);
 
 impl Parse for Information {

@@ -6,7 +6,7 @@ use crate::{util, Parse};
 
 /// A parsed origin line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.2).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Origin {
     pub username: String,
     pub session_id: u64,

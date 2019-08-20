@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use nom::IResult;
 use vec1::Vec1;
 
@@ -9,7 +11,7 @@ use crate::{
 
 /// A parsed SDP session description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct SessionDescription {
     pub version: Version,
     pub origin: Origin,
@@ -81,16 +83,34 @@ impl Parse for SessionDescription {
     }
 }
 
+#[derive(Debug, PartialEq)]
+pub struct ParseSdpError;
+
+impl FromStr for SessionDescription {
+    type Err = ParseSdpError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::parse(s)
+            .map_err(|_| ParseSdpError)
+            .and_then(|(rest, value)| {
+                if rest.is_empty() {
+                    Ok(value)
+                } else {
+                    Err(ParseSdpError)
+                }
+            })
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use lazy_static::lazy_static;
     use vec1::vec1;
 
     use super::*;
     use crate::{Duration, Instant, MediaInformation, RepeatTimes, TimeZone, Timing};
 
-    #[test]
-    fn test_valid() {
-        let s = r#"v=0
+    const EXAMPLE_SDP_STR: &str = r#"v=0
 o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5
 s=SDP Seminar
 i=A Seminar on the session description protocol
@@ -108,7 +128,8 @@ m=video 51372 RTP/AVP 99
 a=rtpmap:99 h263-1998/90000
 "#;
 
-        let expected = SessionDescription {
+    lazy_static! {
+        static ref EXAMPLE_SDP: SessionDescription = SessionDescription {
             version: Version,
             origin: Origin {
                 username: "jdoe".to_owned(),
@@ -204,8 +225,34 @@ a=rtpmap:99 h263-1998/90000
                 },
             ],
         };
+    }
 
-        let (_, sdp) = SessionDescription::parse(s).unwrap();
-        assert_eq!(sdp, expected);
+    #[test]
+    fn test_valid() {
+        let s = format!("{}more", EXAMPLE_SDP_STR);
+        assert_eq!(
+            SessionDescription::parse(&s),
+            Ok(("more", EXAMPLE_SDP.clone()))
+        );
+    }
+
+    #[test]
+    fn test_from_str() {
+        assert_eq!(
+            EXAMPLE_SDP_STR.parse::<SessionDescription>(),
+            Ok(EXAMPLE_SDP.clone())
+        );
+
+        let invalid_str_1 = "foo";
+        assert_eq!(
+            invalid_str_1.parse::<SessionDescription>(),
+            Err(ParseSdpError)
+        );
+
+        let invalid_str_2 = format!("{}more", EXAMPLE_SDP_STR);
+        assert_eq!(
+            invalid_str_2.parse::<SessionDescription>(),
+            Err(ParseSdpError)
+        );
     }
 }

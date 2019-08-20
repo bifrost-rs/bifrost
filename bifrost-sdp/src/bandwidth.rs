@@ -6,7 +6,7 @@ use crate::{util, Parse};
 
 /// A parsed bandwidth line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.8).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Bandwidth {
     pub experimental: bool,
     pub bwtype: String,

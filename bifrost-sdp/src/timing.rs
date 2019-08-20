@@ -6,7 +6,7 @@ use crate::{Instant, Parse};
 
 /// A parsed timing line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.9).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Timing {
     pub start_time: Instant,
     pub stop_time: Instant,

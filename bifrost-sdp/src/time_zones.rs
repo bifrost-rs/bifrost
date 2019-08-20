@@ -8,7 +8,7 @@ use crate::{Duration, Instant, Parse};
 
 /// A parsed time zones line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.11).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TimeZones(pub Vec1<TimeZone>);
 
 impl Parse for TimeZones {
@@ -24,7 +24,7 @@ impl Parse for TimeZones {
 }
 
 /// One pair of <adjustment time> and <offset> in a time zones line.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TimeZone {
     pub adjustment_time: Instant,
     pub offset: Duration,

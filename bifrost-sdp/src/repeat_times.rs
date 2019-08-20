@@ -8,7 +8,7 @@ use crate::{Duration, Parse};
 
 /// A parsed repeat times line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.10).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RepeatTimes {
     pub interval: Duration,
     pub duration: Duration,

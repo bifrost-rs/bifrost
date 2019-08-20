@@ -6,7 +6,7 @@ use crate::{
 
 /// A parsed SDP media description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct MediaDescription {
     pub media_information: MediaInformation,
     pub media_title: Option<Information>,
