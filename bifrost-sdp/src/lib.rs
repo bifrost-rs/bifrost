@@ -4,6 +4,7 @@ mod connection_data;
 mod email_address;
 mod encryption_key;
 mod information;
+mod media_description;
 mod media_information;
 mod ntp;
 mod origin;
@@ -26,6 +27,7 @@ pub use crate::{
     email_address::EmailAddress,
     encryption_key::EncryptionKey,
     information::Information,
+    media_description::MediaDescription,
     media_information::MediaInformation,
     ntp::{Duration, Instant},
     origin::Origin,
