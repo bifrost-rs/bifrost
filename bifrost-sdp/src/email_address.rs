@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::combinator::map;
 use nom::IResult;
 
@@ -7,6 +9,12 @@ use crate::{util, Parse};
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.6).
 #[derive(Clone, Debug, PartialEq)]
 pub struct EmailAddress(pub String);
+
+impl fmt::Display for EmailAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "e={}\r", self.0)
+    }
+}
 
 impl Parse for EmailAddress {
     fn parse(input: &str) -> IResult<&str, Self> {
@@ -19,20 +27,23 @@ impl Parse for EmailAddress {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::EmailAddress;
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid() {
-        let email_addr_str = "j.doe@example.com (Jane Doe)";
-        let line = format!("e={}\nresto\r\n", email_addr_str);
-        let (rest, email_addr) = EmailAddress::parse(&line).unwrap();
-        assert_eq!(rest, "resto\r\n");
-        assert_eq!(email_addr, EmailAddress(email_addr_str.to_owned()));
+        let email_addr = "j.doe@example.com (Jane Doe)";
+        assert_parse_display(
+            &format!("e={}\n\nresto\r\n", email_addr),
+            "\nresto\r\n",
+            &EmailAddress(email_addr.to_owned()),
+            &format!("e={}\r\n", email_addr),
+        );
     }
 
     #[test]
     fn test_invalid() {
-        assert!(EmailAddress::parse("e=\r\n").is_err());
-        assert!(EmailAddress::parse("x=foo@bar.com\r\n").is_err());
+        assert_err::<EmailAddress>("e=\r\n");
+        assert_err::<EmailAddress>("x=foo@bar.com\r\n");
     }
 }
