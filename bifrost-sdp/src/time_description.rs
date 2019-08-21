@@ -14,7 +14,6 @@ impl Parse for TimeDescription {
     fn parse(input: &str) -> IResult<&str, Self> {
         // t=  (time the session is active)
         // r=* (zero or more repeat times)
-
         let (rest, timing) = Parse::parse(input)?;
         let (rest, repeat_times) = Parse::parse(rest)?;
 

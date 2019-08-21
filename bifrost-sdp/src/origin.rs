@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::IResult;
@@ -14,6 +16,21 @@ pub struct Origin {
     pub network_type: String,
     pub address_type: String,
     pub unicast_address: String,
+}
+
+impl fmt::Display for Origin {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(
+            f,
+            "o={} {} {} {} {} {}\r",
+            self.username,
+            self.session_id,
+            self.session_version,
+            self.network_type,
+            self.address_type,
+            self.unicast_address
+        )
+    }
 }
 
 impl Parse for Origin {
@@ -55,39 +72,37 @@ impl Parse for Origin {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Origin;
+    use crate::test_util::assert_parse_display;
 
     #[test]
-    fn test_valid_1() {
-        let s = "o=- 4858251974351650128 2 IN IP4 127.0.0.1\r\nrest";
-        let expected = Origin {
-            username: "-".to_owned(),
-            session_id: 4_858_251_974_351_650_128,
-            session_version: 2,
-            network_type: "IN".to_owned(),
-            address_type: "IP4".to_owned(),
-            unicast_address: "127.0.0.1".to_owned(),
-        };
+    fn test_valid() {
+        assert_parse_display(
+            "o=- 4858251974351650128 2 IN IP4 127.0.0.1\r\nrest",
+            "rest",
+            &Origin {
+                username: "-".to_owned(),
+                session_id: 4_858_251_974_351_650_128,
+                session_version: 2,
+                network_type: "IN".to_owned(),
+                address_type: "IP4".to_owned(),
+                unicast_address: "127.0.0.1".to_owned(),
+            },
+            "o=- 4858251974351650128 2 IN IP4 127.0.0.1\r\n",
+        );
 
-        let (rest, origin) = Origin::parse(s).unwrap();
-        assert_eq!(rest, "rest");
-        assert_eq!(origin, expected);
-    }
-
-    #[test]
-    fn test_valid_2() {
-        let s = "o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\nmore\r\nmore";
-        let expected = Origin {
-            username: "jdoe".to_owned(),
-            session_id: 2_890_844_526,
-            session_version: 2_890_842_807,
-            network_type: "IN".to_owned(),
-            address_type: "IP4".to_owned(),
-            unicast_address: "10.47.16.5".to_owned(),
-        };
-
-        let (rest, origin) = Origin::parse(s).unwrap();
-        assert_eq!(rest, "more\r\nmore");
-        assert_eq!(origin, expected);
+        assert_parse_display(
+            "o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\nmore\r\nmore",
+            "more\r\nmore",
+            &Origin {
+                username: "jdoe".to_owned(),
+                session_id: 2_890_844_526,
+                session_version: 2_890_842_807,
+                network_type: "IN".to_owned(),
+                address_type: "IP4".to_owned(),
+                unicast_address: "10.47.16.5".to_owned(),
+            },
+            "o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\r\n",
+        );
     }
 }
