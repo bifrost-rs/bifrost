@@ -1,3 +1,5 @@
+use std::fmt;
+
 use http::Uri;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
@@ -15,6 +17,17 @@ pub enum EncryptionKey {
     Base64(String),
     Uri(Uri),
     Prompt,
+}
+
+impl fmt::Display for EncryptionKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Clear(key) => writeln!(f, "k=clear:{}\r", key),
+            Self::Base64(key) => writeln!(f, "k=base64:{}\r", key),
+            Self::Uri(uri) => writeln!(f, "k=uri:{}\r", uri),
+            Self::Prompt => writeln!(f, "k=prompt\r"),
+        }
+    }
 }
 
 impl Parse for EncryptionKey {
@@ -53,26 +66,31 @@ fn parse_prompt(input: &str) -> IResult<&str, EncryptionKey> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::EncryptionKey;
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_clear() {
-        assert_eq!(
-            EncryptionKey::parse("k=clear:foo\r\nmore"),
-            Ok(("more", EncryptionKey::Clear("foo".to_owned())))
+        assert_parse_display(
+            "k=clear:foo\r\nmore",
+            "more",
+            &EncryptionKey::Clear("foo".to_owned()),
+            "k=clear:foo\r\n",
         );
-        assert!(EncryptionKey::parse("k=clear\r\nmore").is_err());
-        assert!(EncryptionKey::parse("k=clear:\r\nmore").is_err());
+        assert_err::<EncryptionKey>("k=clear\r\nmore");
+        assert_err::<EncryptionKey>("k=clear:\r\nmore");
     }
 
     #[test]
     fn test_base64() {
-        assert_eq!(
-            EncryptionKey::parse("k=base64:foo\r\nmore"),
-            Ok(("more", EncryptionKey::Base64("foo".to_owned())))
+        assert_parse_display(
+            "k=base64:foo\r\n\rmore",
+            "\rmore",
+            &EncryptionKey::Base64("foo".to_owned()),
+            "k=base64:foo\r\n",
         );
-        assert!(EncryptionKey::parse("k=base64\r\nmore").is_err());
-        assert!(EncryptionKey::parse("k=base64:\r\nmore").is_err());
+        assert_err::<EncryptionKey>("k=base64\r\nmore");
+        assert_err::<EncryptionKey>("k=base64:\r\nmore");
     }
 
     #[test]
@@ -80,29 +98,33 @@ mod tests {
         let uri_str = "https://example.org/key";
         let uri = uri_str.parse().unwrap();
 
-        assert_eq!(
-            EncryptionKey::parse(&format!("k=uri:{}\r\nmore", uri_str)),
-            Ok(("more", EncryptionKey::Uri(uri)))
+        assert_parse_display(
+            &format!("k=uri:{}\r\n\nmore\r", uri_str),
+            "\nmore\r",
+            &EncryptionKey::Uri(uri),
+            &format!("k=uri:{}\r\n", uri_str),
         );
-        assert!(EncryptionKey::parse("k=uri\r\nmore").is_err());
-        assert!(EncryptionKey::parse("k=uri:\r\nmore").is_err());
-        assert!(EncryptionKey::parse("k=uri:!@#$\r\nmore").is_err());
+        assert_err::<EncryptionKey>("k=uri\r\nmore");
+        assert_err::<EncryptionKey>("k=uri:\r\nmore");
+        assert_err::<EncryptionKey>("k=uri:!@#$\r\nmore");
     }
 
     #[test]
     fn test_prompt() {
-        assert_eq!(
-            EncryptionKey::parse("k=prompt\r\nmore"),
-            Ok(("more", EncryptionKey::Prompt))
+        assert_parse_display(
+            "k=prompt\r\nmore",
+            "more",
+            &EncryptionKey::Prompt,
+            "k=prompt\r\n",
         );
-        assert!(EncryptionKey::parse("k=prompt:foo\r\nmore").is_err());
-        assert!(EncryptionKey::parse("k=prompt:\r\nmore").is_err());
+        assert_err::<EncryptionKey>("k=prompt:foo\r\nmore");
+        assert_err::<EncryptionKey>("k=prompt:\r\nmore");
     }
 
     #[test]
     fn test_invalid() {
-        assert!(EncryptionKey::parse("k=foo\r\nmore").is_err());
-        assert!(EncryptionKey::parse("k=foo:\r\nmore").is_err());
-        assert!(EncryptionKey::parse("k=foo:bar\r\nmore").is_err());
+        assert_err::<EncryptionKey>("k=foo\r\nmore");
+        assert_err::<EncryptionKey>("k=foo:\r\nmore");
+        assert_err::<EncryptionKey>("k=foo:bar\r\nmore");
     }
 }
