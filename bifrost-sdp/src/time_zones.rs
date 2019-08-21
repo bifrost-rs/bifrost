@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::multi::separated_nonempty_list;
@@ -10,6 +12,27 @@ use crate::{Duration, Instant, Parse};
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.11).
 #[derive(Clone, Debug, PartialEq)]
 pub struct TimeZones(pub Vec1<TimeZone>);
+
+impl fmt::Display for TimeZones {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let first = self.0.first();
+        write!(
+            f,
+            "z={} {}",
+            first.adjustment_time.as_secs(),
+            first.offset.as_secs()
+        )?;
+        for tz in self.0.iter().skip(1) {
+            write!(
+                f,
+                " {} {}",
+                tz.adjustment_time.as_secs(),
+                tz.offset.as_secs()
+            )?;
+        }
+        writeln!(f, "\r")
+    }
+}
 
 impl Parse for TimeZones {
     fn parse(input: &str) -> IResult<&str, Self> {
@@ -51,13 +74,13 @@ impl Parse for TimeZone {
 mod tests {
     use vec1::vec1;
 
-    use super::*;
+    use super::{Duration, Instant, Parse, TimeZone, TimeZones};
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid_time_zone() {
-        let s1 = "2882844526 -1h\r\n";
         assert_eq!(
-            TimeZone::parse(s1),
+            TimeZone::parse("2882844526 -1h\r\n"),
             Ok((
                 "\r\n",
                 TimeZone {
@@ -67,9 +90,8 @@ mod tests {
             ))
         );
 
-        let s2 = "2898848070 0 hello";
         assert_eq!(
-            TimeZone::parse(s2),
+            TimeZone::parse("2898848070 0 hello"),
             Ok((
                 " hello",
                 TimeZone {
@@ -82,73 +104,67 @@ mod tests {
 
     #[test]
     fn test_invalid_time_zone() {
-        assert!(TimeZone::parse("foo").is_err());
-        assert!(TimeZone::parse("2 hello").is_err());
+        assert_err::<TimeZone>("foo");
+        assert_err::<TimeZone>("2 hello");
     }
 
     #[test]
     fn test_valid_time_zones() {
-        let s1 = "z=2882844526 -1h\r\nmore";
-        assert_eq!(
-            TimeZones::parse(s1),
-            Ok((
-                "more",
-                TimeZones(vec1![TimeZone {
+        assert_parse_display(
+            "z=2882844526 -1h\r\nmore",
+            "more",
+            &TimeZones(vec1![TimeZone {
+                adjustment_time: Instant::from_secs(2_882_844_526),
+                offset: Duration::from_hours(-1),
+            }]),
+            "z=2882844526 -3600\r\n",
+        );
+
+        assert_parse_display(
+            "z=2882844526 -1h 2898848070 0\r\nmore\n",
+            "more\n",
+            &TimeZones(vec1![
+                TimeZone {
                     adjustment_time: Instant::from_secs(2_882_844_526),
                     offset: Duration::from_hours(-1),
-                }])
-            ))
+                },
+                TimeZone {
+                    adjustment_time: Instant::from_secs(2_898_848_070),
+                    offset: Duration::from_secs(0),
+                }
+            ]),
+            "z=2882844526 -3600 2898848070 0\r\n",
         );
 
-        let s2 = "z=2882844526 -1h 2898848070 0\r\nmore\n";
-        assert_eq!(
-            TimeZones::parse(s2),
-            Ok((
-                "more\n",
-                TimeZones(vec1![
-                    TimeZone {
-                        adjustment_time: Instant::from_secs(2_882_844_526),
-                        offset: Duration::from_hours(-1),
-                    },
-                    TimeZone {
-                        adjustment_time: Instant::from_secs(2_898_848_070),
-                        offset: Duration::from_secs(0),
-                    }
-                ])
-            ))
-        );
-
-        let s3 = "z=2882844526 -1h 2898848070 0 42 +25d\r\nmore\n";
-        assert_eq!(
-            TimeZones::parse(s3),
-            Ok((
-                "more\n",
-                TimeZones(vec1![
-                    TimeZone {
-                        adjustment_time: Instant::from_secs(2_882_844_526),
-                        offset: Duration::from_hours(-1),
-                    },
-                    TimeZone {
-                        adjustment_time: Instant::from_secs(2_898_848_070),
-                        offset: Duration::from_secs(0),
-                    },
-                    TimeZone {
-                        adjustment_time: Instant::from_secs(42),
-                        offset: Duration::from_days(25),
-                    }
-                ])
-            ))
+        assert_parse_display(
+            "z=2882844526 -1h 2898848070 0 42 +25d\r\nmore\n",
+            "more\n",
+            &TimeZones(vec1![
+                TimeZone {
+                    adjustment_time: Instant::from_secs(2_882_844_526),
+                    offset: Duration::from_hours(-1),
+                },
+                TimeZone {
+                    adjustment_time: Instant::from_secs(2_898_848_070),
+                    offset: Duration::from_secs(0),
+                },
+                TimeZone {
+                    adjustment_time: Instant::from_secs(42),
+                    offset: Duration::from_days(25),
+                }
+            ]),
+            "z=2882844526 -3600 2898848070 0 42 2160000\r\n",
         );
     }
 
     #[test]
     fn test_invalid_time_zones() {
-        assert!(TimeZones::parse("z=1\r\n").is_err());
-        assert!(TimeZones::parse("z=1 2 3\r\n").is_err());
-        assert!(TimeZones::parse("z=1 2 3 4 5\r\n").is_err());
-        assert!(TimeZones::parse("z=\r\n").is_err());
-        assert!(TimeZones::parse("z=s 1\r\n").is_err());
-        assert!(TimeZones::parse("z= 1 2\r\n").is_err());
-        assert!(TimeZones::parse("z=1 2 \r\n").is_err());
+        assert_err::<TimeZones>("z=1\r\n");
+        assert_err::<TimeZones>("z=1 2 3\r\n");
+        assert_err::<TimeZones>("z=1 2 3 4 5\r\n");
+        assert_err::<TimeZones>("z=\r\n");
+        assert_err::<TimeZones>("z=s 1\r\n");
+        assert_err::<TimeZones>("z= 1 2\r\n");
+        assert_err::<TimeZones>("z=1 2 \r\n");
     }
 }
