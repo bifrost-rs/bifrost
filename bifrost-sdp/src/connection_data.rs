@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::IResult;
@@ -11,6 +13,16 @@ pub struct ConnectionData {
     pub network_type: String,
     pub address_type: String,
     pub connection_address: String,
+}
+
+impl fmt::Display for ConnectionData {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(
+            f,
+            "c={} {} {}\r",
+            self.network_type, self.address_type, self.connection_address
+        )
+    }
 }
 
 impl Parse for ConnectionData {
@@ -41,27 +53,25 @@ impl Parse for ConnectionData {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid() {
-        let s = "c=IN IP4 224.2.1.1/127/3\r\n rest\n";
-        let (rest, c) = ConnectionData::parse(s).unwrap();
-        assert_eq!(rest, " rest\n");
-        assert_eq!(
-            c,
-            ConnectionData {
+        assert_parse_display(
+            "c=IN IP4 224.2.1.1/127/3\r\n rest\n",
+            " rest\n",
+            &ConnectionData {
                 network_type: "IN".to_owned(),
                 address_type: "IP4".to_owned(),
                 connection_address: "224.2.1.1/127/3".to_owned(),
-            }
-        )
+            },
+            "c=IN IP4 224.2.1.1/127/3\r\n",
+        );
     }
 
     #[test]
     fn test_invalid() {
-        let s1 = "c=IN IP4\r\n";
-        let s2 = "c=IN IP4 224.2.1.1/127/3 foo\r\n";
-        assert!(ConnectionData::parse(s1).is_err());
-        assert!(ConnectionData::parse(s2).is_err());
+        assert_err::<ConnectionData>("c=IN IP4\r\n");
+        assert_err::<ConnectionData>("c=IN IP4 224.2.1.1/127/3 foo\r\n");
     }
 }
