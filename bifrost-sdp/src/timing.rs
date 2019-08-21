@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::IResult;
@@ -12,10 +14,15 @@ pub struct Timing {
     pub stop_time: Instant,
 }
 
+impl fmt::Display for Timing {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "t={} {}\r", self.start_time, self.stop_time)
+    }
+}
+
 impl Parse for Timing {
     fn parse(input: &str) -> IResult<&str, Self> {
         // t=<start-time> <stop-time>
-
         let (rest, _) = tag("t=")(input)?;
 
         let (rest, start_time) = Parse::parse(rest)?;
@@ -36,27 +43,27 @@ impl Parse for Timing {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{Instant, Timing};
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid() {
-        let s = "t=123 456\nmore\r\n";
-        let (rest, timing) = Timing::parse(s).unwrap();
-        assert_eq!(rest, "more\r\n");
-        assert_eq!(
-            timing,
-            Timing {
+        assert_parse_display(
+            "t=123 456\nmore\r\n",
+            "more\r\n",
+            &Timing {
                 start_time: Instant::from_secs(123),
                 stop_time: Instant::from_secs(456),
-            }
+            },
+            "t=123 456\r\n",
         );
     }
 
     #[test]
     fn test_invalid() {
-        assert!(Timing::parse("t=123\r\n").is_err());
-        assert!(Timing::parse("t=foo 456\r\n").is_err());
-        assert!(Timing::parse("t=123 foo\r\n").is_err());
-        assert!(Timing::parse("t=123 456 789\r\n").is_err());
+        assert_err::<Timing>("t=123\r\n");
+        assert_err::<Timing>("t=foo 456\r\n");
+        assert_err::<Timing>("t=123 foo\r\n");
+        assert_err::<Timing>("t=123 456 789\r\n");
     }
 }
