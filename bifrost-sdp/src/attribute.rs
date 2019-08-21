@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::{line_ending, not_line_ending};
 use nom::combinator::opt;
@@ -11,6 +13,15 @@ use crate::Parse;
 pub struct Attribute {
     pub name: String,
     pub value: Option<String>,
+}
+
+impl fmt::Display for Attribute {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.value {
+            Some(value) => writeln!(f, "a={}:{}\r", self.name, value),
+            None => writeln!(f, "a={}\r", self.name),
+        }
+    }
 }
 
 impl Parse for Attribute {
@@ -39,84 +50,79 @@ fn parse_value(input: &str) -> IResult<&str, &str> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Attribute;
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_property_attrs() {
-        assert_eq!(
-            Attribute::parse("a=foo\r\nmore"),
-            Ok((
-                "more",
-                Attribute {
-                    name: "foo".to_owned(),
-                    value: None,
-                }
-            ))
+        assert_parse_display(
+            "a=foo\r\nmore",
+            "more",
+            &Attribute {
+                name: "foo".to_owned(),
+                value: None,
+            },
+            "a=foo\r\n",
         );
 
-        assert_eq!(
-            Attribute::parse("a= f o o \r\nmore"),
-            Ok((
-                "more",
-                Attribute {
-                    name: " f o o ".to_owned(),
-                    value: None,
-                }
-            ))
+        assert_parse_display(
+            "a= f o o \r\nmore",
+            "more",
+            &Attribute {
+                name: " f o o ".to_owned(),
+                value: None,
+            },
+            "a= f o o \r\n",
         );
     }
 
     #[test]
     fn test_value_attrs() {
-        assert_eq!(
-            Attribute::parse("a=foo:bar\r\nmore"),
-            Ok((
-                "more",
-                Attribute {
-                    name: "foo".to_owned(),
-                    value: Some("bar".to_owned()),
-                }
-            ))
+        assert_parse_display(
+            "a=foo:bar\r\nmore",
+            "more",
+            &Attribute {
+                name: "foo".to_owned(),
+                value: Some("bar".to_owned()),
+            },
+            "a=foo:bar\r\n",
         );
 
-        assert_eq!(
-            Attribute::parse("a=foo:b:ar \r\nmore"),
-            Ok((
-                "more",
-                Attribute {
-                    name: "foo".to_owned(),
-                    value: Some("b:ar ".to_owned()),
-                }
-            ))
+        assert_parse_display(
+            "a=foo:b:ar \r\nmore",
+            "more",
+            &Attribute {
+                name: "foo".to_owned(),
+                value: Some("b:ar ".to_owned()),
+            },
+            "a=foo:b:ar \r\n",
         );
 
-        assert_eq!(
-            Attribute::parse("a=foo:::\r\nmore"),
-            Ok((
-                "more",
-                Attribute {
-                    name: "foo".to_owned(),
-                    value: Some("::".to_owned()),
-                }
-            ))
+        assert_parse_display(
+            "a=foo:::\r\nmore",
+            "more",
+            &Attribute {
+                name: "foo".to_owned(),
+                value: Some("::".to_owned()),
+            },
+            "a=foo:::\r\n",
         );
 
-        assert_eq!(
-            Attribute::parse("a=foo:\r\nmore"),
-            Ok((
-                "more",
-                Attribute {
-                    name: "foo".to_owned(),
-                    value: Some("".to_owned()),
-                }
-            ))
+        assert_parse_display(
+            "a=foo:\r\nmore",
+            "more",
+            &Attribute {
+                name: "foo".to_owned(),
+                value: Some("".to_owned()),
+            },
+            "a=foo:\r\n",
         );
     }
 
     #[test]
     fn test_invalid() {
-        assert!(Attribute::parse("a=\r\n").is_err());
-        assert!(Attribute::parse("a=:\r\n").is_err());
-        assert!(Attribute::parse("a=:x\r\n").is_err());
+        assert_err::<Attribute>("a=\r\n");
+        assert_err::<Attribute>("a=:\r\n");
+        assert_err::<Attribute>("a=:x\r\n");
     }
 }

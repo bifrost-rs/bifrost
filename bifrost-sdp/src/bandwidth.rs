@@ -17,13 +17,11 @@ pub struct Bandwidth {
 
 impl fmt::Display for Bandwidth {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(
-            f,
-            "b={}{}:{}\r",
-            if self.experimental { "X-" } else { "" },
-            self.bwtype,
-            self.bandwidth
-        )
+        if self.experimental {
+            writeln!(f, "b=X-{}:{}\r", self.bwtype, self.bandwidth)
+        } else {
+            writeln!(f, "b={}:{}\r", self.bwtype, self.bandwidth)
+        }
     }
 }
 
