@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::multi::separated_nonempty_list;
@@ -13,6 +15,16 @@ pub struct RepeatTimes {
     pub interval: Duration,
     pub duration: Duration,
     pub offsets: Vec1<Duration>,
+}
+
+impl fmt::Display for RepeatTimes {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "r={} {}", self.interval, self.duration)?;
+        for offset in &self.offsets {
+            write!(f, " {}", offset)?;
+        }
+        writeln!(f, "\r")
+    }
 }
 
 impl Parse for RepeatTimes {
@@ -54,118 +66,112 @@ impl Parse for RepeatTimes {
 mod tests {
     use vec1::vec1;
 
-    use super::*;
+    use super::{Duration, RepeatTimes};
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid() {
-        assert_eq!(
-            RepeatTimes::parse("r=1 2 -3\r\nmore"),
-            Ok((
-                "more",
-                RepeatTimes {
-                    interval: Duration::from_secs(1),
-                    duration: Duration::from_secs(2),
-                    offsets: vec1![Duration::from_secs(-3)],
-                }
-            ))
+        assert_parse_display(
+            "r=1 2 -3\r\nmore",
+            "more",
+            &RepeatTimes {
+                interval: Duration::from_secs(1),
+                duration: Duration::from_secs(2),
+                offsets: vec1![Duration::from_secs(-3)],
+            },
+            "r=1 2 -3\r\n",
         );
 
-        assert_eq!(
-            RepeatTimes::parse("r=1 2 +3 -4\r\nmore"),
-            Ok((
-                "more",
-                RepeatTimes {
-                    interval: Duration::from_secs(1),
-                    duration: Duration::from_secs(2),
-                    offsets: vec1![Duration::from_secs(3), Duration::from_secs(-4)],
-                }
-            ))
+        assert_parse_display(
+            "r=1 2 +3 -4\r\nmore",
+            "more",
+            &RepeatTimes {
+                interval: Duration::from_secs(1),
+                duration: Duration::from_secs(2),
+                offsets: vec1![Duration::from_secs(3), Duration::from_secs(-4)],
+            },
+            "r=1 2 3 -4\r\n",
         );
 
-        assert_eq!(
-            RepeatTimes::parse("r=1 2 3 4 5\r\nmore"),
-            Ok((
-                "more",
-                RepeatTimes {
-                    interval: Duration::from_secs(1),
-                    duration: Duration::from_secs(2),
-                    offsets: vec1![
-                        Duration::from_secs(3),
-                        Duration::from_secs(4),
-                        Duration::from_secs(5)
-                    ],
-                }
-            ))
+        assert_parse_display(
+            "r=1 2 3 4 5\r\nmore",
+            "more",
+            &RepeatTimes {
+                interval: Duration::from_secs(1),
+                duration: Duration::from_secs(2),
+                offsets: vec1![
+                    Duration::from_secs(3),
+                    Duration::from_secs(4),
+                    Duration::from_secs(5)
+                ],
+            },
+            "r=1 2 3 4 5\r\n",
         );
     }
 
     #[test]
     fn test_valid_units() {
-        assert_eq!(
-            RepeatTimes::parse("r=1d -2h 3m\r\nmore"),
-            Ok((
-                "more",
-                RepeatTimes {
-                    interval: Duration::from_days(1),
-                    duration: Duration::from_hours(-2),
-                    offsets: vec1![Duration::from_mins(3)],
-                }
-            ))
+        assert_parse_display(
+            "r=1d -2h 3m\r\nmore",
+            "more",
+            &RepeatTimes {
+                interval: Duration::from_days(1),
+                duration: Duration::from_hours(-2),
+                offsets: vec1![Duration::from_mins(3)],
+            },
+            "r=86400 -7200 180\r\n",
         );
 
-        assert_eq!(
-            RepeatTimes::parse("r=+1h +2m 3s -4d\r\nmore"),
-            Ok((
-                "more",
-                RepeatTimes {
-                    interval: Duration::from_hours(1),
-                    duration: Duration::from_mins(2),
-                    offsets: vec1![Duration::from_secs(3), Duration::from_days(-4)],
-                }
-            ))
+        assert_parse_display(
+            "r=+1h +2m 3s -4d\r\nmore",
+            "more",
+            &RepeatTimes {
+                interval: Duration::from_hours(1),
+                duration: Duration::from_mins(2),
+                offsets: vec1![Duration::from_secs(3), Duration::from_days(-4)],
+            },
+            "r=3600 120 3 -345600\r\n",
         );
 
-        assert_eq!(
-            RepeatTimes::parse("r=1m 2 +3h -4s 5d\r\nmore"),
-            Ok((
-                "more",
-                RepeatTimes {
-                    interval: Duration::from_mins(1),
-                    duration: Duration::from_secs(2),
-                    offsets: vec1![
-                        Duration::from_hours(3),
-                        Duration::from_secs(-4),
-                        Duration::from_days(5)
-                    ],
-                }
-            ))
+        assert_parse_display(
+            "r=1m 2 +3h -4s 5d\r\nmore",
+            "more",
+            &RepeatTimes {
+                interval: Duration::from_mins(1),
+                duration: Duration::from_secs(2),
+                offsets: vec1![
+                    Duration::from_hours(3),
+                    Duration::from_secs(-4),
+                    Duration::from_days(5)
+                ],
+            },
+            "r=60 2 10800 -4 432000\r\n",
         );
 
-        assert_eq!(
-            RepeatTimes::parse("r=7d 1h 0 25h\r\nrest"),
-            Ok((
-                "rest",
-                RepeatTimes {
-                    interval: Duration::from_days(7),
-                    duration: Duration::from_hours(1),
-                    offsets: vec1![Duration::from_secs(0), Duration::from_hours(25)],
-                }
-            ))
+        assert_parse_display(
+            "r=-7d 1h 0 +25h\r\nrest",
+            "rest",
+            &RepeatTimes {
+                interval: Duration::from_days(-7),
+                duration: Duration::from_hours(1),
+                offsets: vec1![Duration::from_secs(0), Duration::from_hours(25)],
+            },
+            "r=-604800 3600 0 90000\r\n",
         )
     }
 
     #[test]
     fn test_invalid() {
-        assert!(RepeatTimes::parse("r=1 2\r\nmore").is_err());
-        assert!(RepeatTimes::parse("r=1 2  3\r\nmore").is_err());
-        assert!(RepeatTimes::parse("r=1 2 3 \r\nmore").is_err());
-        assert!(RepeatTimes::parse("r= 1 2 3\r\nmore").is_err());
+        assert_err::<RepeatTimes>("r=1 2\r\nmore");
+        assert_err::<RepeatTimes>("r=1 2  3\r\nmore");
+        assert_err::<RepeatTimes>("r=1 2 3 \r\nmore");
+        assert_err::<RepeatTimes>("r= 1 2 3\r\nmore");
     }
 
     #[test]
     fn test_invalid_units() {
-        assert!(RepeatTimes::parse("r=1x 2 3\r\nmore").is_err());
-        assert!(RepeatTimes::parse("r=1d 2h 3x\r\nmore").is_err());
-        assert!(RepeatTimes::parse("r=s 2 3\r\nmore").is_err());
+        assert_err::<RepeatTimes>("r=1x 2 3\r\nmore");
+        assert_err::<RepeatTimes>("r=1d 2h 3x\r\nmore");
+        assert_err::<RepeatTimes>("r=s 2 3\r\nmore");
     }
 }
