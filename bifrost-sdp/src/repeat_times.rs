@@ -19,16 +19,17 @@ pub struct RepeatTimes {
 
 impl fmt::Display for RepeatTimes {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
+        writeln!(
             f,
-            "r={} {}",
+            "r={} {} {}\r",
             self.interval.as_secs(),
-            self.duration.as_secs()
-        )?;
-        for offset in &self.offsets {
-            write!(f, " {}", offset.as_secs())?;
-        }
-        writeln!(f, "\r")
+            self.duration.as_secs(),
+            self.offsets
+                .iter()
+                .map(|offset| offset.as_secs().to_string())
+                .collect::<Vec<_>>()
+                .join(" ")
+        )
     }
 }
 
