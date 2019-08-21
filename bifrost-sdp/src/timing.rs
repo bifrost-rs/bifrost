@@ -16,7 +16,12 @@ pub struct Timing {
 
 impl fmt::Display for Timing {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "t={} {}\r", self.start_time, self.stop_time)
+        writeln!(
+            f,
+            "t={} {}\r",
+            self.start_time.as_secs(),
+            self.stop_time.as_secs()
+        )
     }
 }
 

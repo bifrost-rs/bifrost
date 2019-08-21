@@ -19,9 +19,14 @@ pub struct RepeatTimes {
 
 impl fmt::Display for RepeatTimes {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "r={} {}", self.interval, self.duration)?;
+        write!(
+            f,
+            "r={} {}",
+            self.interval.as_secs(),
+            self.duration.as_secs()
+        )?;
         for offset in &self.offsets {
-            write!(f, " {}", offset)?;
+            write!(f, " {}", offset.as_secs())?;
         }
         writeln!(f, "\r")
     }
