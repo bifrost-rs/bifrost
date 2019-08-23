@@ -1,5 +1,5 @@
 # Lint with rustfmt and Clippy
-style_lint_template: &STYLE_LINT_TEMPLATE
+lint_template: &LINT_TEMPLATE
   rustfmt_script:
     - rustup component add rustfmt
     - cargo fmt --all -- --check
@@ -15,7 +15,7 @@ test_stable_template: &TEST_STABLE_TEMPLATE
 test_nightly_template: &TEST_NIGHTLY_TEMPLATE
   test_nightly_script: cargo +nightly test --all-features --all-targets --all
 
-# Audit `Cargo.lock` files for dependencies with security vulnerabilities
+# Audit `Cargo.lock` for dependencies with security vulnerabilities
 audit_template: &AUDIT_TEMPLATE
   audit_script:
     - cargo install cargo-audit
@@ -28,9 +28,9 @@ task:
     - name: Linux (stable)
       container:
         image: rust:latest
-      <<: *STYLE_LINT_TEMPLATE
+      <<: *LINT_TEMPLATE
       <<: *TEST_STABLE_TEMPLATE
-      <<: *AUDIT_SCRIPT
+      <<: *AUDIT_TEMPLATE
     - name: Linux (nightly)
       container:
         image: rustlang/rust:nightly
