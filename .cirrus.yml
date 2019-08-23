@@ -1,11 +1,3 @@
-# Build and test against the latest stable release of Rust
-test_stable_template: &TEST_STABLE_TEMPLATE
-  test_stable_script: cargo test --all-features --all-targets --all
-
-# Build and test against the latest nightly release of Rust
-test_nightly_template: &TEST_NIGHTLY_TEMPLATE
-  test_nightly_script: cargo +nightly test --all-features --all-targets --all
-
 # Lint with rustfmt and Clippy
 style_lint_template: &STYLE_LINT_TEMPLATE
   rustfmt_script:
@@ -15,6 +7,21 @@ style_lint_template: &STYLE_LINT_TEMPLATE
     - rustup component add clippy
     - cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
 
+# Build and test against the latest stable release of Rust
+test_stable_template: &TEST_STABLE_TEMPLATE
+  test_stable_script: cargo test --all-features --all-targets --all
+
+# Build and test against the latest nightly release of Rust
+test_nightly_template: &TEST_NIGHTLY_TEMPLATE
+  test_nightly_script: cargo +nightly test --all-features --all-targets --all
+
+# Audit `Cargo.lock` files for dependencies with security vulnerabilities
+audit_template: &AUDIT_TEMPLATE
+  audit_script:
+    - cargo install cargo-audit
+    - cargo generate-lockfile
+    - cargo audit
+
 # Linux
 task:
   matrix:
@@ -23,6 +30,7 @@ task:
         image: rust:latest
       <<: *STYLE_LINT_TEMPLATE
       <<: *TEST_STABLE_TEMPLATE
+      <<: *AUDIT_SCRIPT
     - name: Linux (nightly)
       container:
         image: rustlang/rust:nightly
