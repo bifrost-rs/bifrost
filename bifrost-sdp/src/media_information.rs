@@ -1,3 +1,5 @@
+use std::fmt;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::line_ending;
 use nom::multi::separated_nonempty_list;
@@ -14,6 +16,16 @@ pub struct MediaInformation {
     pub port: String,
     pub proto: String,
     pub formats: Vec1<String>,
+}
+
+impl fmt::Display for MediaInformation {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "m={} {} {}", self.media_type, self.port, self.proto)?;
+        for format in &self.formats {
+            write!(f, " {}", format)?;
+        }
+        writeln!(f, "\r")
+    }
 }
 
 impl Parse for MediaInformation {
@@ -50,56 +62,51 @@ impl Parse for MediaInformation {
 mod tests {
     use vec1::vec1;
 
-    use super::*;
+    use super::MediaInformation;
+    use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
     fn test_valid() {
-        let s1 = "m=audio 49170 RTP/AVP 0\r\nmore\n";
-        assert_eq!(
-            MediaInformation::parse(s1),
-            Ok((
-                "more\n",
-                MediaInformation {
-                    media_type: "audio".to_owned(),
-                    port: "49170".to_owned(),
-                    proto: "RTP/AVP".to_owned(),
-                    formats: vec1!["0".to_owned()],
-                }
-            ))
+        assert_parse_display(
+            "m=audio 49170 RTP/AVP 0\r\nmore\n",
+            "more\n",
+            &MediaInformation {
+                media_type: "audio".to_owned(),
+                port: "49170".to_owned(),
+                proto: "RTP/AVP".to_owned(),
+                formats: vec1!["0".to_owned()],
+            },
+            "m=audio 49170 RTP/AVP 0\r\n",
         );
 
-        let s2 = "m=video 49170/2 RTP/AVP 31\r\nmore\n";
-        assert_eq!(
-            MediaInformation::parse(s2),
-            Ok((
-                "more\n",
-                MediaInformation {
-                    media_type: "video".to_owned(),
-                    port: "49170/2".to_owned(),
-                    proto: "RTP/AVP".to_owned(),
-                    formats: vec1!["31".to_owned()],
-                }
-            ))
+        assert_parse_display(
+            "m=video 49170/2 RTP/AVP 31\r\nmore\n",
+            "more\n",
+            &MediaInformation {
+                media_type: "video".to_owned(),
+                port: "49170/2".to_owned(),
+                proto: "RTP/AVP".to_owned(),
+                formats: vec1!["31".to_owned()],
+            },
+            "m=video 49170/2 RTP/AVP 31\r\n",
         );
 
-        let s3 = "m=foo 12345 bar x y z\r\nmore\r\n";
-        assert_eq!(
-            MediaInformation::parse(s3),
-            Ok((
-                "more\r\n",
-                MediaInformation {
-                    media_type: "foo".to_owned(),
-                    port: "12345".to_owned(),
-                    proto: "bar".to_owned(),
-                    formats: vec1!["x".to_owned(), "y".to_owned(), "z".to_owned()],
-                }
-            ))
+        assert_parse_display(
+            "m=foo 12345 bar x y z\r\nmore\r\n",
+            "more\r\n",
+            &MediaInformation {
+                media_type: "foo".to_owned(),
+                port: "12345".to_owned(),
+                proto: "bar".to_owned(),
+                formats: vec1!["x".to_owned(), "y".to_owned(), "z".to_owned()],
+            },
+            "m=foo 12345 bar x y z\r\n",
         );
     }
 
     #[test]
     fn test_invalid() {
-        assert!(MediaInformation::parse("n=audio 49170 RTP/AVP 0\r\nmore\n").is_err());
-        assert!(MediaInformation::parse("m=audio 49170 RTP/AVP\r\nmore\n").is_err());
+        assert_err::<MediaInformation>("n=audio 49170 RTP/AVP 0\r\nmore\n");
+        assert_err::<MediaInformation>("m=audio 49170 RTP/AVP\r\nmore\n");
     }
 }
