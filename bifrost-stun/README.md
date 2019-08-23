@@ -4,7 +4,7 @@
 [![crates.io](https://img.shields.io/crates/v/bifrost-stun)](https://crates.io/crates/bifrost-stun)
 [![Documentation](https://docs.rs/bifrost-stun/badge.svg)](https://docs.rs/bifrost-stun)
 [![License](https://img.shields.io/crates/l/bifrost-stun)](#license)
-[![Discord](https://img.shields.io/discord/614317437667508235)](https://discord.gg/GJvVrd3)
+[![Discord](https://img.shields.io/discord/614317437667508235?logo=discord&logoColor=white)](https://discord.gg/GJvVrd3)
 
 A Rust implementation of the [STUN](https://tools.ietf.org/html/rfc5389) protocol.
 
