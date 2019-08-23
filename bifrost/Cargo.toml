@@ -12,5 +12,5 @@ readme = "README.md"
 
 [dependencies]
 bifrost-ice = { version = "0.1.0-alpha", path = "../bifrost-ice" }
-bifrost-sdp = { version = "0.1.0-alpha", path = "../bifrost-sdp" }
+bifrost-sdp = { version = "0.1.0", path = "../bifrost-sdp" }
 bifrost-stun = { version = "0.1.0-alpha", path = "../bifrost-stun" }
