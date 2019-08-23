@@ -2,7 +2,9 @@
 
 [![Build Status](https://api.cirrus-ci.com/github/bifrost-rs/bifrost.svg)](https://cirrus-ci.com/github/bifrost-rs/bifrost)
 [![crates.io](https://img.shields.io/crates/v/bifrost)](https://crates.io/crates/bifrost)
+[![Documentation](https://docs.rs/bifrost/badge.svg)](https://docs.rs/bifrost)
 [![License](https://img.shields.io/crates/l/bifrost)](#license)
+[![Discord](https://img.shields.io/discord/614317437667508235)](https://discord.gg/GJvVrd3)
 
 Real-time media and data communication for Rust.
 
