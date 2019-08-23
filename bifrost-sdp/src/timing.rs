@@ -48,7 +48,7 @@ impl Parse for Timing {
 
 #[cfg(test)]
 mod tests {
-    use super::{Instant, Timing};
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]

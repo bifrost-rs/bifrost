@@ -71,7 +71,7 @@ impl Parse for RepeatTimes {
 mod tests {
     use vec1::vec1;
 
-    use super::{Duration, RepeatTimes};
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]

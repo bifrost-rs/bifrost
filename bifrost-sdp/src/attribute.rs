@@ -50,7 +50,7 @@ fn parse_value(input: &str) -> IResult<&str, &str> {
 
 #[cfg(test)]
 mod tests {
-    use super::Attribute;
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]

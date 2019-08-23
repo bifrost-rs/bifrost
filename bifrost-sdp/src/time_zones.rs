@@ -74,7 +74,7 @@ impl Parse for TimeZone {
 mod tests {
     use vec1::vec1;
 
-    use super::{Duration, Instant, Parse, TimeZone, TimeZones};
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]

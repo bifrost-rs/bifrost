@@ -52,7 +52,7 @@ impl Parse for Bandwidth {
 
 #[cfg(test)]
 mod tests {
-    use super::Bandwidth;
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]

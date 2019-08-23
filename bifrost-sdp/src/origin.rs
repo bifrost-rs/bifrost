@@ -72,7 +72,7 @@ impl Parse for Origin {
 
 #[cfg(test)]
 mod tests {
-    use super::Origin;
+    use super::*;
     use crate::test_util::assert_parse_display;
 
     #[test]

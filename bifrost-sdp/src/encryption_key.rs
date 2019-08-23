@@ -66,7 +66,7 @@ fn parse_prompt(input: &str) -> IResult<&str, EncryptionKey> {
 
 #[cfg(test)]
 mod tests {
-    use super::EncryptionKey;
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]

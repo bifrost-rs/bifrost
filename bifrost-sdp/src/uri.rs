@@ -26,7 +26,7 @@ impl Parse for Uri {
 
 #[cfg(test)]
 mod tests {
-    use super::{HttpUri, Uri};
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]

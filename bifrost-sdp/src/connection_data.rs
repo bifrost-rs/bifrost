@@ -52,7 +52,7 @@ impl Parse for ConnectionData {
 
 #[cfg(test)]
 mod tests {
-    use super::ConnectionData;
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]

@@ -27,7 +27,7 @@ impl Parse for Information {
 
 #[cfg(test)]
 mod tests {
-    use super::Information;
+    use super::*;
     use crate::test_util::assert_parse_display;
 
     #[test]

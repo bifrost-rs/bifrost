@@ -91,7 +91,7 @@ impl Parse for Duration {
 
 #[cfg(test)]
 mod tests {
-    use super::{Duration, Instant, Parse};
+    use super::*;
     use crate::test_util::assert_err;
 
     #[test]

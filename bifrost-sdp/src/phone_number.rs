@@ -27,7 +27,7 @@ impl Parse for PhoneNumber {
 
 #[cfg(test)]
 mod tests {
-    use super::PhoneNumber;
+    use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
