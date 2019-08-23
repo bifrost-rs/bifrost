@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
 
 use nom::IResult;
 use vec1::Vec1;
@@ -27,6 +27,25 @@ pub struct SessionDescription {
     pub encryption_key: Option<EncryptionKey>,
     pub attributes: Vec<Attribute>,
     pub media_descriptions: Vec<MediaDescription>,
+}
+
+impl fmt::Display for SessionDescription {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.version.fmt(f)?;
+        self.origin.fmt(f)?;
+        self.session_name.fmt(f)?;
+        self.session_information.iter().try_for_each(|x| x.fmt(f))?;
+        self.uri.iter().try_for_each(|x| x.fmt(f))?;
+        self.email_address.iter().try_for_each(|x| x.fmt(f))?;
+        self.phone_number.iter().try_for_each(|x| x.fmt(f))?;
+        self.connection_data.iter().try_for_each(|x| x.fmt(f))?;
+        self.bandwidth.iter().try_for_each(|x| x.fmt(f))?;
+        self.time_descriptions.iter().try_for_each(|x| x.fmt(f))?;
+        self.time_zones.iter().try_for_each(|x| x.fmt(f))?;
+        self.encryption_key.iter().try_for_each(|x| x.fmt(f))?;
+        self.attributes.iter().try_for_each(|x| x.fmt(f))?;
+        self.media_descriptions.iter().try_for_each(|x| x.fmt(f))
+    }
 }
 
 impl Parse for SessionDescription {
@@ -108,9 +127,10 @@ mod tests {
     use vec1::vec1;
 
     use super::*;
+    use crate::test_util::assert_parse_display;
     use crate::{Duration, Instant, MediaInformation, RepeatTimes, TimeZone, Timing};
 
-    const EXAMPLE_SDP_STR: &str = r#"v=0
+    const EXAMPLE_SDP_INPUT: &str = r#"v=0
 o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5
 s=SDP Seminar
 i=A Seminar on the session description protocol
@@ -127,6 +147,23 @@ m=audio 49170 RTP/AVP 0
 m=video 51372 RTP/AVP 99
 a=rtpmap:99 h263-1998/90000
 "#;
+
+    const EXAMPLE_SDP_OUTPUT: &str = "v=0\r\n\
+                                      o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\r\n\
+                                      s=SDP Seminar\r\n\
+                                      i=A Seminar on the session description protocol\r\n\
+                                      u=http://www.example.com/seminars/sdp.pdf\r\n\
+                                      e=j.doe@example.com (Jane Doe)\r\n\
+                                      c=IN IP4 224.2.36.42/127\r\n\
+                                      b=X-YZ:128\r\n\
+                                      t=3034423618 3042462418\r\n\
+                                      t=3034423619 3042462419\r\n\
+                                      r=604800 3600 0 90000\r\n\
+                                      z=2882844526 -3600 2898848070 0\r\n\
+                                      a=recvonly\r\n\
+                                      m=audio 49170 RTP/AVP 0\r\n\
+                                      m=video 51372 RTP/AVP 99\r\n\
+                                      a=rtpmap:99 h263-1998/90000\r\n";
 
     lazy_static! {
         static ref EXAMPLE_SDP: SessionDescription = SessionDescription {
@@ -229,17 +266,18 @@ a=rtpmap:99 h263-1998/90000
 
     #[test]
     fn test_valid() {
-        let s = format!("{}more", EXAMPLE_SDP_STR);
-        assert_eq!(
-            SessionDescription::parse(&s),
-            Ok(("more", EXAMPLE_SDP.clone()))
+        assert_parse_display(
+            &format!("{}more", EXAMPLE_SDP_INPUT),
+            "more",
+            &*EXAMPLE_SDP,
+            &EXAMPLE_SDP_OUTPUT,
         );
     }
 
     #[test]
     fn test_from_str() {
         assert_eq!(
-            EXAMPLE_SDP_STR.parse::<SessionDescription>(),
+            EXAMPLE_SDP_INPUT.parse::<SessionDescription>(),
             Ok(EXAMPLE_SDP.clone())
         );
 
@@ -249,7 +287,7 @@ a=rtpmap:99 h263-1998/90000
             Err(ParseSdpError)
         );
 
-        let invalid_str_2 = format!("{}more", EXAMPLE_SDP_STR);
+        let invalid_str_2 = format!("{}more", EXAMPLE_SDP_INPUT);
         assert_eq!(
             invalid_str_2.parse::<SessionDescription>(),
             Err(ParseSdpError)
