@@ -34,7 +34,6 @@ pub use crate::{
     media_information::MediaInformation,
     ntp::{Duration, Instant},
     origin::Origin,
-    parse::Parse,
     phone_number::PhoneNumber,
     repeat_times::RepeatTimes,
     session_description::SessionDescription,
@@ -45,3 +44,5 @@ pub use crate::{
     uri::Uri,
     version::Version,
 };
+
+use parse::Parse;

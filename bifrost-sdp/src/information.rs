@@ -1,7 +1,6 @@
 use std::fmt;
 
-use nom::combinator::map;
-use nom::IResult;
+use nom::{combinator::map, IResult};
 
 use crate::{util, Parse};
 

@@ -1,9 +1,11 @@
 use std::str::FromStr;
 
-use nom::bytes::complete::{is_not, tag};
-use nom::character::complete::line_ending;
-use nom::combinator::{map, map_res};
-use nom::IResult;
+use nom::{
+    bytes::complete::{is_not, tag},
+    character::complete::line_ending,
+    combinator::{map, map_res},
+    IResult,
+};
 
 /// Parses the input until a whitespace or a newline.
 pub fn parse_field<'a, T: From<&'a str>>(input: &'a str) -> IResult<&str, T> {

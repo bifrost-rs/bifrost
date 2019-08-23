@@ -1,6 +1,8 @@
-use nom::combinator::opt;
-use nom::multi::{many0, many1};
-use nom::IResult;
+use nom::{
+    combinator::opt,
+    multi::{many0, many1},
+    IResult,
+};
 use vec1::Vec1;
 
 pub trait Parse: Sized {
@@ -28,9 +30,7 @@ impl<T: Parse> Parse for Vec1<T> {
 
 #[cfg(test)]
 mod tests {
-    use nom::bytes::complete::tag;
-    use nom::character::complete::digit1;
-    use nom::combinator::map_res;
+    use nom::{bytes::complete::tag, character::complete::digit1, combinator::map_res};
 
     use super::*;
 

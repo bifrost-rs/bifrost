@@ -1,6 +1,4 @@
-use nom::character::complete::digit1;
-use nom::combinator::map_res;
-use nom::IResult;
+use nom::{character::complete::digit1, combinator::map_res, IResult};
 
 use crate::Parse;
 

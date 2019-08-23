@@ -1,11 +1,13 @@
 use std::fmt;
 
 use http::Uri;
-use nom::branch::alt;
-use nom::bytes::complete::{is_not, tag};
-use nom::character::complete::line_ending;
-use nom::combinator::map_res;
-use nom::IResult;
+use nom::{
+    branch::alt,
+    bytes::complete::{is_not, tag},
+    character::complete::line_ending,
+    combinator::map_res,
+    IResult,
+};
 
 use crate::Parse;
 

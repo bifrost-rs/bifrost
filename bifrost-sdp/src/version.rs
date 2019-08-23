@@ -1,8 +1,6 @@
 use std::fmt;
 
-use nom::bytes::complete::tag;
-use nom::character::complete::line_ending;
-use nom::IResult;
+use nom::{bytes::complete::tag, character::complete::line_ending, IResult};
 
 use crate::Parse;
 
