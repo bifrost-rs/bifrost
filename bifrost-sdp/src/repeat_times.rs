@@ -25,9 +25,9 @@ impl fmt::Display for RepeatTimes {
             self.interval.as_secs(),
             self.duration.as_secs()
         )?;
-        for offset in &self.offsets {
-            write!(f, " {}", offset.as_secs())?;
-        }
+        self.offsets
+            .iter()
+            .try_for_each(|x| write!(f, " {}", x.as_secs()))?;
         writeln!(f, "\r")
     }
 }

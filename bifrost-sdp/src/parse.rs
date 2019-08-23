@@ -32,7 +32,7 @@ mod tests {
     use nom::character::complete::digit1;
     use nom::combinator::map_res;
 
-    use super::*;
+    use super::{IResult, Parse, Vec1};
 
     #[derive(Debug, PartialEq)]
     struct Test(i64);

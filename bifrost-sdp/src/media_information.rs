@@ -21,9 +21,7 @@ pub struct MediaInformation {
 impl fmt::Display for MediaInformation {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "m={} {} {}", self.media_type, self.port, self.proto)?;
-        for format in &self.formats {
-            write!(f, " {}", format)?;
-        }
+        self.formats.iter().try_for_each(|x| write!(f, " {}", x))?;
         writeln!(f, "\r")
     }
 }

@@ -22,14 +22,14 @@ impl fmt::Display for TimeZones {
             first.adjustment_time.as_secs(),
             first.offset.as_secs()
         )?;
-        for tz in self.0.iter().skip(1) {
+        self.0.iter().skip(1).try_for_each(|tz| {
             write!(
                 f,
                 " {} {}",
                 tz.adjustment_time.as_secs(),
                 tz.offset.as_secs()
-            )?;
-        }
+            )
+        })?;
         writeln!(f, "\r")
     }
 }
