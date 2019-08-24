@@ -8,7 +8,7 @@ lint_template: &LINT_TEMPLATE
     - cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
 
 # Build and test against the version of Rust specified in `rust-toolchain`
-test_template: &TEST_NIGHTLY_TEMPLATE
+test_template: &TEST_TEMPLATE
   test_script: cargo test --all-features --all-targets --all
 
 # Audit `Cargo.lock` for dependencies with security vulnerabilities
