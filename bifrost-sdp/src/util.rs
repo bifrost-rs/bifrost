@@ -9,7 +9,7 @@ use nom::{
 
 /// Parses the input until a whitespace or a newline.
 pub fn parse_field<'a, T: From<&'a str>>(input: &'a str) -> IResult<&str, T> {
-    map(is_not(" \r\n"), Into::into)(input)
+    map(is_not(" \r\n"), T::from)(input)
 }
 
 /// Parses the input until a whitespace or a newline, and tries to convert the
