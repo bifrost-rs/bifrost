@@ -21,8 +21,8 @@ impl<A: Attribute> StunCodec<A> {
 impl<A: Attribute> Default for StunCodec<A> {
     fn default() -> Self {
         Self {
-            encoder: MessageEncoder::default(),
-            decoder: MessageDecoder::default(),
+            encoder: Default::default(),
+            decoder: Default::default(),
         }
     }
 }

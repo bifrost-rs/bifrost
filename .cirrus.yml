@@ -5,7 +5,7 @@ lint_template: &LINT_TEMPLATE
     - cargo fmt --all -- --check
   clippy_script:
     - rustup component add clippy
-    - cargo clippy --all-targets --all-features --all -- -D warnings -W clippy::pedantic
+    - cargo clippy --all-targets --all-features --all -- -D warnings
 
 # Build and test against the version of Rust specified in `rust-toolchain`
 test_template: &TEST_TEMPLATE

@@ -1,2 +1,2 @@
-mod stun_codec;
+mod codec;
 mod util;
