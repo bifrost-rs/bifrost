@@ -4,7 +4,8 @@ use std::{
     time::Duration,
 };
 
-use futures::{future, stream, Stream, StreamExt};
+use futures_core::Stream;
+use futures_util::{future, stream, StreamExt};
 use tokio_net::{
     udp::{UdpFramed, UdpSocket},
     ToSocketAddrs,

@@ -9,7 +9,7 @@ use std::{
     time::Duration,
 };
 
-use futures::{stream::SplitSink, SinkExt};
+use futures_util::{stream::SplitSink, SinkExt};
 use stun_codec::TransactionId;
 use tokio_net::udp::UdpFramed;
 use tokio_sync::{mpsc, oneshot};

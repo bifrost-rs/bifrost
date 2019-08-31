@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use futures::{Stream, StreamExt};
+use futures_core::Stream;
+use futures_util::StreamExt;
 use stun_codec::TransactionId;
 use tokio_sync::oneshot;
 

@@ -56,7 +56,7 @@ mod tests {
     use std::convert::TryInto;
 
     use bytecodec::EncodeExt;
-    use futures::{stream, SinkExt, StreamExt};
+    use futures_util::{stream, SinkExt, StreamExt};
     use stun_codec::{
         rfc5389::{attributes::Software, methods::BINDING, Attribute},
         MessageClass, TransactionId,
