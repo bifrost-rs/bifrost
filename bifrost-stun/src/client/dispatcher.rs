@@ -47,18 +47,15 @@ where
     }
 
     fn handle_recv(&mut self, msg: Result<Message, bytecodec::Error>) {
-        match msg {
-            Ok(msg) => {
-                if let Some(tx) = self.transactions.remove(&msg.transaction_id()) {
-                    tokio_executor::spawn(async move {
-                        tokio_timer::sleep(std::time::Duration::from_secs(3)).await;
-                        let _ = tx.send(msg);
-                    });
-                }
+        if let Ok(msg) = msg {
+            if let Some(tx) = self.transactions.remove(&msg.transaction_id()) {
+                tokio_executor::spawn(async move {
+                    tokio_timer::sleep(std::time::Duration::from_secs(3)).await;
+                    let _ = tx.send(msg);
+                });
             }
-            Err(_) => {
-                // TODO: Log error
-            }
+        } else {
+            // TODO: Log error
         }
     }
 }

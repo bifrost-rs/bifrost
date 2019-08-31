@@ -3,7 +3,11 @@ pub use self::builder::ClientBuilder;
 
 mod dispatcher;
 
-use std::{io, net::SocketAddr, time::Duration};
+use std::{
+    io::{self, Error, ErrorKind},
+    net::SocketAddr,
+    time::Duration,
+};
 
 use futures::{stream::SplitSink, SinkExt};
 use stun_codec::TransactionId;
@@ -25,20 +29,21 @@ impl Client {
         self.request()
             .await?
             .attributes()
-            .find_map(|attr| match attr {
-                stun_codec::rfc5389::Attribute::XorMappedAddress(addr) => Some(addr.address()),
-                _ => None,
+            .find_map(|attr| {
+                if let stun_codec::rfc5389::Attribute::XorMappedAddress(addr) = attr {
+                    Some(addr.address())
+                } else {
+                    None
+                }
             })
-            .ok_or_else(|| {
-                io::Error::new(io::ErrorKind::Other, "missing XOR-MAPPED-ADDRESS attribute")
-            })
+            .ok_or_else(|| Error::new(ErrorKind::Other, "missing XOR-MAPPED-ADDRESS attribute"))
     }
 
     pub async fn request(&mut self) -> io::Result<Message> {
         let message = new_message();
 
         let mut num_retries = 0u8;
-        let mut rto = self.rto.clone();
+        let mut rto = self.rto;
         while num_retries < 3 {
             // Add a (id, tx) pair to worker
             let (tx, rx) = oneshot::channel();
@@ -48,7 +53,7 @@ impl Client {
                     tx,
                 ))
                 .await
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+                .map_err(|e| Error::new(ErrorKind::Other, e))?;
 
             // Send request to STUN server
             self.sink
@@ -60,7 +65,7 @@ impl Client {
             let rx = Timeout::new(rx, rto);
             match rx.await {
                 Ok(Ok(resp)) => return Ok(resp),
-                Ok(Err(_)) => return Err(io::Error::new(io::ErrorKind::Other, "recv error")),
+                Ok(Err(_)) => return Err(Error::new(ErrorKind::Other, "recv error")),
                 Err(_) => {
                     println!("transaction timed out after {:?}", rto);
 
@@ -70,7 +75,7 @@ impl Client {
                             message.transaction_id(),
                         ))
                         .await
-                        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+                        .map_err(|e| Error::new(ErrorKind::Other, e))?;
 
                     num_retries += 1;
                     rto *= 2;
@@ -78,8 +83,8 @@ impl Client {
             };
         }
 
-        Err(io::Error::new(
-            io::ErrorKind::TimedOut,
+        Err(Error::new(
+            ErrorKind::TimedOut,
             format!("transaction timed out after {} retries", num_retries),
         ))
     }

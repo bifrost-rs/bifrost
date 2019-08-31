@@ -21,8 +21,8 @@ pub struct ClientBuilder<L, P> {
     rto: Duration,
 }
 
-impl ClientBuilder<(), ()> {
-    pub fn new() -> Self {
+impl Default for ClientBuilder<(), ()> {
+    fn default() -> Self {
         Self {
             local_addr: (),
             peer_addr: (),
@@ -32,6 +32,10 @@ impl ClientBuilder<(), ()> {
 }
 
 impl ClientBuilder<(), ()> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     pub fn bind<L: ToSocketAddrs>(self, local_addr: L) -> ClientBuilder<L, ()> {
         ClientBuilder {
             local_addr,
@@ -79,7 +83,7 @@ where
         let (dispatcher_tx, dispatcher_rx) = mpsc::channel(100);
 
         // Merge dispatcher_tx with incoming UDP stream
-        let udp_stream = filter_addr(stream, peer_addr.clone());
+        let udp_stream = filter_addr(stream, peer_addr);
         let dispatcher_rx = stream::select(dispatcher_rx, udp_stream);
 
         tokio_executor::spawn(async move {
