@@ -11,11 +11,9 @@ repository = "https://github.com/bifrost-rs/bifrost"
 readme = "README.md"
 
 [dependencies]
-async-trait = "0.1"
 bytecodec = "0.4"
 bytes = "0.4"
 futures-preview = { version = "=0.3.0-alpha.18", features = ["async-await", "nightly"] }
-rand = "0.7"
 stun_codec = "0.1"
 tokio-codec = "=0.2.0-alpha.4"
 tokio-executor = "=0.2.0-alpha.4"

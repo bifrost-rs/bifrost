@@ -1,4 +1,8 @@
-use std::{io, net::SocketAddr, time::Duration};
+use std::{
+    io::{self, Error, ErrorKind},
+    net::SocketAddr,
+    time::Duration,
+};
 
 use futures::{future, stream, Stream, StreamExt};
 use tokio_net::{
@@ -109,8 +113,8 @@ async fn resolve_peer_addr<A: ToSocketAddrs>(
             return Ok(peer_addr);
         }
     }
-    Err(io::Error::new(
-        io::ErrorKind::InvalidInput,
+    Err(Error::new(
+        ErrorKind::InvalidInput,
         "no addresses to send data to",
     ))
 }
