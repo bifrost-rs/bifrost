@@ -21,8 +21,8 @@ impl<A: Attribute> StunCodec<A> {
 impl<A: Attribute> Default for StunCodec<A> {
     fn default() -> Self {
         Self {
-            encoder: Default::default(),
-            decoder: Default::default(),
+            encoder: MessageEncoder::default(),
+            decoder: MessageDecoder::default(),
         }
     }
 }
@@ -56,7 +56,7 @@ mod tests {
     use std::convert::TryInto;
 
     use bytecodec::EncodeExt;
-    use futures_util::{stream, SinkExt, StreamExt};
+    use futures::{stream, SinkExt, StreamExt};
     use stun_codec::{
         rfc5389::{attributes::Software, methods::BINDING, Attribute},
         MessageClass, TransactionId,
