@@ -1,6 +1,6 @@
 # Bifrost SDP
 
-[![Build Status](https://api.cirrus-ci.com/github/bifrost-rs/bifrost.svg)](https://cirrus-ci.com/github/bifrost-rs/bifrost)
+[![Build Status](https://api.cirrus-ci.com/github/bifrost-rs/bifrost.svg?branch=master)](https://cirrus-ci.com/github/bifrost-rs/bifrost/master)
 [![crates.io](https://img.shields.io/crates/v/bifrost-sdp)](https://crates.io/crates/bifrost-sdp)
 [![Documentation](https://docs.rs/bifrost-sdp/badge.svg)](https://docs.rs/bifrost-sdp)
 [![License](https://img.shields.io/crates/l/bifrost-sdp)](#license)
