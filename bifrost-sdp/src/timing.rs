@@ -1,6 +1,5 @@
-use std::fmt;
-
 use nom::{bytes::complete::tag, character::complete::line_ending, IResult};
+use std::fmt;
 
 use crate::{Instant, Parse};
 

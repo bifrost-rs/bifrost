@@ -23,7 +23,7 @@ mod version;
 #[cfg(test)]
 mod test_util;
 
-pub use crate::{
+pub use self::{
     attribute::Attribute,
     bandwidth::Bandwidth,
     connection_data::ConnectionData,

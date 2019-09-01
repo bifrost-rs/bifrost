@@ -1,10 +1,9 @@
-use std::fmt;
-
 use http::Uri as HttpUri;
 use nom::{
     combinator::{map, map_res},
     IResult,
 };
+use std::fmt;
 
 use crate::{util, Parse};
 

@@ -1,21 +1,21 @@
 mod builder;
-pub use self::builder::ClientBuilder;
-
 mod dispatcher;
 
+pub use self::builder::ClientBuilder;
+
+use futures_util::{stream::SplitSink, SinkExt};
 use std::{
     io::{self, Error, ErrorKind},
     net::SocketAddr,
     time::Duration,
 };
-
-use futures_util::{stream::SplitSink, SinkExt};
 use stun_codec::TransactionId;
 use tokio_net::udp::UdpFramed;
 use tokio_sync::{mpsc, oneshot};
 use tokio_timer::Timeout;
 
-use crate::{client::dispatcher::DispatcherMessage, Codec, Message};
+use self::dispatcher::DispatcherMessage;
+use crate::{Codec, Message};
 
 enum Response {
     Ok(Message),

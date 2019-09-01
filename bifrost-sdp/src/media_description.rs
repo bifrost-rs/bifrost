@@ -1,6 +1,5 @@
-use std::fmt;
-
 use nom::IResult;
+use std::fmt;
 
 use crate::{
     Attribute, Bandwidth, ConnectionData, EncryptionKey, Information, MediaInformation, Parse,

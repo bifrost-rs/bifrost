@@ -1,6 +1,5 @@
-use std::fmt;
-
 use nom::IResult;
+use std::fmt;
 
 use crate::{Parse, RepeatTimes, Timing};
 

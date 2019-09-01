@@ -1,8 +1,7 @@
-use std::fmt;
-
 use nom::{
     bytes::complete::tag, character::complete::line_ending, multi::separated_nonempty_list, IResult,
 };
+use std::fmt;
 use vec1::Vec1;
 
 use crate::{util, Parse};

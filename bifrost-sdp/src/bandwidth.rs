@@ -1,10 +1,9 @@
-use std::fmt;
-
 use nom::{
     bytes::complete::tag,
     character::complete::{alphanumeric1, line_ending},
     IResult,
 };
+use std::fmt;
 
 use crate::{util, Parse};
 

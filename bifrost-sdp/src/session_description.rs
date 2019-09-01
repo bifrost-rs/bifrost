@@ -1,6 +1,5 @@
-use std::{fmt, str::FromStr};
-
 use nom::IResult;
+use std::{fmt, str::FromStr};
 use vec1::Vec1;
 
 use crate::{

@@ -1,11 +1,10 @@
-use std::fmt;
-
 use nom::{
     bytes::complete::{is_not, tag},
     character::complete::{line_ending, not_line_ending},
     combinator::opt,
     IResult,
 };
+use std::fmt;
 
 use crate::Parse;
 

@@ -1,5 +1,3 @@
-use std::fmt;
-
 use http::Uri;
 use nom::{
     branch::alt,
@@ -8,6 +6,7 @@ use nom::{
     combinator::map_res,
     IResult,
 };
+use std::fmt;
 
 use crate::Parse;
 
