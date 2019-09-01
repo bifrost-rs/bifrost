@@ -11,16 +11,10 @@ repository = "https://github.com/bifrost-rs/bifrost"
 readme = "README.md"
 
 [dependencies]
-bytecodec = "0.4"
 bytes = "0.4"
-futures-core-preview = "=0.3.0-alpha.18"
-futures-util-preview = "=0.3.0-alpha.18"
-stun_codec = "0.1"
+nom = "5.0"
 tokio-codec = "=0.2.0-alpha.4"
-tokio-executor = "=0.2.0-alpha.4"
-tokio-net = "=0.2.0-alpha.4"
-tokio-sync = "=0.2.0-alpha.4"
-tokio-timer = "=0.3.0-alpha.4"
 
 [dev-dependencies]
-tokio-test = "=0.2.0-alpha.4"
+bytecodec = "0.4"
+stun_codec = "0.1"

@@ -1,6 +1,3 @@
-pub mod client;
-mod codec;
-mod util;
+pub mod message;
 
-type Codec = crate::codec::StunCodec<stun_codec::rfc5389::Attribute>;
-type Message = stun_codec::Message<stun_codec::rfc5389::Attribute>;
+mod codec;

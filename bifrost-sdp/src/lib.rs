@@ -45,4 +45,4 @@ pub use self::{
     version::Version,
 };
 
-use parse::Parse;
+use self::parse::Parse;
