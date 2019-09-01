@@ -1,11 +1,10 @@
+use futures_core::Stream;
+use futures_util::{future, stream, StreamExt};
 use std::{
     io::{self, Error, ErrorKind},
     net::SocketAddr,
     time::Duration,
 };
-
-use futures_core::Stream;
-use futures_util::{future, stream, StreamExt};
 use tokio_net::{
     udp::{UdpFramed, UdpSocket},
     ToSocketAddrs,
