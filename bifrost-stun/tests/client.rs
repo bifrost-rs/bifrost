@@ -9,7 +9,8 @@ fn test_binding() {
             .bind("0.0.0.0:0")
             // .connect("127.0.0.1:3478")
             .connect("stun.l.google.com:19302")
-            .rto(Duration::from_secs(5))
+            .rto(Duration::from_millis(500))
+            .max_attempts(2)
             .build()
             .await
             .unwrap();

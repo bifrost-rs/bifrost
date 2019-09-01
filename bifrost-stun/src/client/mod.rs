@@ -17,11 +17,18 @@ use tokio_timer::Timeout;
 
 use crate::{client::dispatcher::DispatcherMessage, Codec, Message};
 
+enum Response {
+    Ok(Message),
+    TimeOut,
+}
+
 pub struct Client {
     sink: SplitSink<UdpFramed<Codec>, (Message, SocketAddr)>,
     peer_addr: SocketAddr,
     dispatcher_tx: mpsc::Sender<DispatcherMessage>,
     rto: Duration,
+    max_attempts: u32,
+    last_timeout: u32,
 }
 
 impl Client {
@@ -40,53 +47,57 @@ impl Client {
     }
 
     pub async fn request(&mut self) -> io::Result<Message> {
-        let message = new_message();
-
-        let mut num_retries = 0u8;
+        let req = new_message();
         let mut rto = self.rto;
-        while num_retries < 3 {
-            // Add a (id, tx) pair to worker
-            let (tx, rx) = oneshot::channel();
+
+        for attempt in 0..self.max_attempts {
+            let resp = self.request_once(req.clone(), rto).await?;
+
+            if let Response::Ok(msg) = resp {
+                return Ok(msg);
+            }
+
+            println!("request timed out after {:?}", rto);
+
+            // Remove current transction from worker
             self.dispatcher_tx
-                .send(DispatcherMessage::NewTransaction(
-                    message.transaction_id(),
-                    tx,
-                ))
+                .send(DispatcherMessage::RemoveTransaction(req.transaction_id()))
                 .await
                 .map_err(|e| Error::new(ErrorKind::Other, e))?;
 
-            // Send request to STUN server
-            self.sink
-                .send((message.clone(), self.peer_addr))
-                .await
-                .unwrap();
-
-            // Wait for worker to dispatch response
-            let rx = Timeout::new(rx, rto);
-            match rx.await {
-                Ok(Ok(resp)) => return Ok(resp),
-                Ok(Err(_)) => return Err(Error::new(ErrorKind::Other, "recv error")),
-                Err(_) => {
-                    println!("transaction timed out after {:?}", rto);
-
-                    // Remove current transction from worker
-                    self.dispatcher_tx
-                        .send(DispatcherMessage::RemoveTransaction(
-                            message.transaction_id(),
-                        ))
-                        .await
-                        .map_err(|e| Error::new(ErrorKind::Other, e))?;
-
-                    num_retries += 1;
-                    rto *= 2;
-                }
-            };
+            if attempt + 1 == self.max_attempts - 1 {
+                rto = self.rto * self.last_timeout
+            } else {
+                rto *= 2
+            }
         }
 
         Err(Error::new(
             ErrorKind::TimedOut,
-            format!("transaction timed out after {} retries", num_retries),
+            format!("transaction timed out after {} attempts", self.max_attempts),
         ))
+    }
+
+    async fn request_once(&mut self, req: Message, timeout: Duration) -> io::Result<Response> {
+        // Add a new transaction to dispatcher
+        let (tx, rx) = oneshot::channel();
+        self.dispatcher_tx
+            .send(DispatcherMessage::NewTransaction(req.transaction_id(), tx))
+            .await
+            .map_err(|e| Error::new(ErrorKind::Other, e))?;
+
+        // Send out the request
+        self.sink
+            .send((req, self.peer_addr))
+            .await
+            .map_err(|e| Error::new(ErrorKind::InvalidData, e))?;
+
+        // Wait for dispatcher to finish transaction
+        match Timeout::new(rx, timeout).await {
+            Ok(Ok(resp)) => Ok(Response::Ok(resp)),
+            Ok(Err(_)) => Err(Error::new(ErrorKind::Other, "recv error")),
+            Err(_) => Ok(Response::TimeOut),
+        }
     }
 }
 

@@ -24,6 +24,8 @@ pub struct ClientBuilder<L, P> {
     local_addr: L,
     peer_addr: P,
     rto: Duration,
+    max_attempts: u32,
+    last_timeout: u32,
 }
 
 impl Default for ClientBuilder<(), ()> {
@@ -32,6 +34,8 @@ impl Default for ClientBuilder<(), ()> {
             local_addr: (),
             peer_addr: (),
             rto: Duration::from_millis(500),
+            max_attempts: 7,
+            last_timeout: 16,
         }
     }
 }
@@ -46,6 +50,8 @@ impl ClientBuilder<(), ()> {
             local_addr,
             peer_addr: (),
             rto: self.rto,
+            max_attempts: self.max_attempts,
+            last_timeout: self.last_timeout,
         }
     }
 }
@@ -59,16 +65,28 @@ where
             local_addr: self.local_addr,
             peer_addr,
             rto: self.rto,
+            max_attempts: self.max_attempts,
+            last_timeout: self.last_timeout,
         }
     }
 }
 
 impl<L, P> ClientBuilder<L, P> {
-    pub fn rto(self, rto: Duration) -> ClientBuilder<L, P> {
-        ClientBuilder {
-            local_addr: self.local_addr,
-            peer_addr: self.peer_addr,
-            rto,
+    pub fn rto(self, rto: Duration) -> Self {
+        Self { rto, ..self }
+    }
+
+    pub fn max_attempts(self, max_attempts: u32) -> Self {
+        Self {
+            max_attempts,
+            ..self
+        }
+    }
+
+    pub fn last_timeout(self, last_timeout: u32) -> Self {
+        Self {
+            last_timeout,
+            ..self
         }
     }
 }
@@ -101,6 +119,8 @@ where
             peer_addr,
             dispatcher_tx,
             rto: self.rto,
+            max_attempts: self.max_attempts,
+            last_timeout: self.last_timeout,
         })
     }
 }
