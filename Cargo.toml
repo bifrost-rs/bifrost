@@ -15,6 +15,7 @@ members = [
     "bifrost-ice",
     "bifrost-sdp",
     "bifrost-stun",
+    "bifrost-turn",
     "bifrost-webrtc",
 ]
 
@@ -22,4 +23,5 @@ members = [
 bifrost-ice = { version = "0.1.0-alpha", path = "bifrost-ice" }
 bifrost-sdp = { version = "0.1.0", path = "bifrost-sdp" }
 bifrost-stun = { version = "0.1.0-alpha", path = "bifrost-stun" }
+bifrost-turn = { version = "0.1.0-alpha", path = "bifrost-turn" }
 bifrost-webrtc = { version = "0.1.0-alpha", path = "bifrost-webrtc" }
