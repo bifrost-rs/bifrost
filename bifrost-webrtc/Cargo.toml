@@ -1,0 +1,13 @@
+[package]
+name = "bifrost-webrtc"
+version = "0.1.0-alpha"
+authors = ["Zizheng Tai <me@zizheng.me>"]
+license = "MIT OR Apache-2.0"
+edition = "2018"
+description = "A Rust implementation of the WebRTC API."
+documentation = "https://docs.rs/bifrost-webrtc/0.1.0-alpha/bifrost_webrtc"
+homepage = "https://bifrost.rs"
+repository = "https://github.com/bifrost-rs/bifrost"
+readme = "README.md"
+
+[dependencies]

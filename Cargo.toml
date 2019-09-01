@@ -15,9 +15,11 @@ members = [
     "bifrost-ice",
     "bifrost-sdp",
     "bifrost-stun",
+    "bifrost-webrtc",
 ]
 
 [dependencies]
 bifrost-ice = { version = "0.1.0-alpha", path = "bifrost-ice" }
 bifrost-sdp = { version = "0.1.0", path = "bifrost-sdp" }
 bifrost-stun = { version = "0.1.0-alpha", path = "bifrost-stun" }
+bifrost-webrtc = { version = "0.1.0-alpha", path = "bifrost-webrtc" }
