@@ -1,3 +1,2 @@
+pub mod codec;
 pub mod message;
-
-mod codec;

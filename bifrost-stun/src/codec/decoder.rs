@@ -7,34 +7,44 @@ use std::{convert::TryInto, io};
 use tokio_codec::Decoder;
 
 use crate::{
-    codec::StunCodec,
+    codec::MessageCodec,
     message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE},
 };
 
-impl Decoder for StunCodec {
+const HEADER_LEN: usize = 20;
+
+impl Decoder for MessageCodec {
     type Item = Option<Message>;
     type Error = io::Error;
 
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
-        // TODO: Optimize by parsing the header at most once.
-        let (class, method, transaction_id, len) = match parse_header(src) {
-            Ok((_, header)) => header,
-            Err(nom::Err::Incomplete(_)) => return Ok(None),
-            Err(_) => return Ok(Some(None)),
-        };
+        if self.header.is_none() {
+            self.header = match parse_header(src) {
+                Ok((_, header)) => Some(header),
+                Err(nom::Err::Incomplete(_)) => return Ok(None),
+                Err(_) => return Ok(Some(None)),
+            };
+        }
 
-        if src.len() < (20 + len).into() {
+        let len: usize = self.header.as_ref().unwrap().2.into();
+        if src.len() < HEADER_LEN + len {
             return Ok(None);
         }
 
-        let attr_buf = &src[20..20 + usize::from(len)];
-        let attributes = match many0(parse_attribute)(attr_buf) {
-            Ok((rest, _)) if !rest.is_empty() => return Ok(Some(None)),
+        let attributes = match many0(parse_attribute)(&src[HEADER_LEN..HEADER_LEN + len]) {
+            Ok((rest, _)) if !rest.is_empty() => {
+                self.reset();
+                return Ok(Some(None));
+            }
             Ok((_, attrs)) => attrs,
-            Err(_) => return Ok(Some(None)),
+            Err(_) => {
+                self.reset();
+                return Ok(Some(None));
+            }
         };
 
-        src.advance(20 + usize::from(len));
+        src.advance(HEADER_LEN + len);
+        let (class, method, _, transaction_id) = self.header.take().unwrap();
 
         Ok(Some(Some(Message {
             class,
@@ -45,7 +55,7 @@ impl Decoder for StunCodec {
     }
 }
 
-fn parse_header(input: &[u8]) -> IResult<&[u8], (Class, Method, TransactionId, u16)> {
+fn parse_header(input: &[u8]) -> IResult<&[u8], (Class, Method, u16, TransactionId)> {
     use nom::{
         bytes::streaming::{tag, take},
         number::streaming::be_u16,
@@ -67,7 +77,7 @@ fn parse_header(input: &[u8]) -> IResult<&[u8], (Class, Method, TransactionId, u
     let (rest, tr_id) = take(12usize)(rest)?;
     let tr_id = TransactionId::new(tr_id.try_into().unwrap());
 
-    Ok((rest, (class, method, tr_id, len)))
+    Ok((rest, (class, method, len, tr_id)))
 }
 
 fn parse_class_and_method(input: (&[u8], usize)) -> IResult<(&[u8], usize), (Class, Method)> {
@@ -129,9 +139,7 @@ mod tests {
         message.add_attribute(Attribute::XorMappedAddress(XorMappedAddress::new(addr)));
 
         let mut encoder = MessageEncoder::new();
-        let bytes = encoder.encode_into_bytes(message.clone()).unwrap();
-
-        BytesMut::from(bytes)
+        BytesMut::from(encoder.encode_into_bytes(message.clone()).unwrap())
     }
 
     #[test]
@@ -140,7 +148,7 @@ mod tests {
         let mut bytes = new_test_msg(addr);
         bytes.extend(0..3);
 
-        let mut codec = StunCodec;
+        let mut codec = MessageCodec::new();
         let msg = match codec.decode(&mut bytes) {
             Ok(Some(Some(msg))) => msg,
             _ => panic!("failed to decode"),
@@ -154,38 +162,48 @@ mod tests {
             Some(XorMappedAddress { addr })
         );
         assert_eq!(bytes.len(), 3);
+        assert!(codec.header.is_none());
     }
 
     #[test]
-    fn test_incomplete_header() {
+    fn test_incomplete() {
         let addr = "213.141.156.236:48583".parse().unwrap();
         let mut bytes = new_test_msg(addr);
-        assert!(bytes.len() > 10);
-        unsafe {
-            bytes.set_len(10);
+        let mut codec = MessageCodec::new();
+
+        let len = bytes.len();
+        for new_len in (0..len).step_by(3) {
+            unsafe {
+                bytes.set_len(new_len);
+            }
+            match codec.decode(&mut bytes) {
+                Ok(None) => (),
+                _ => panic!("failed to decode incomplete message"),
+            };
+
+            assert_eq!(bytes.len(), new_len);
+            if new_len >= HEADER_LEN {
+                assert!(codec.header.is_some());
+            }
         }
 
-        let mut codec = StunCodec;
-        match codec.decode(&mut bytes) {
-            Ok(None) => (),
-            _ => panic!("failed to decode incomplete header"),
+        unsafe {
+            bytes.set_len(len);
+        }
+        let msg = match codec.decode(&mut bytes) {
+            Ok(Some(Some(msg))) => msg,
+            _ => panic!("failed to eventually decode complete message"),
         };
-        assert_eq!(bytes.len(), 10);
-    }
 
-    #[test]
-    fn test_incomplete_attrs() {
-        let addr = "213.141.156.236:48583".parse().unwrap();
-        let mut bytes = new_test_msg(addr);
-        bytes.truncate(3);
-        let len = bytes.len();
-
-        let mut codec = StunCodec;
-        match codec.decode(&mut bytes) {
-            Ok(None) => (),
-            _ => panic!("failed to decode incomplete attributes"),
-        };
-        assert_eq!(bytes.len(), len);
+        assert_eq!(msg.class, Class::SuccessResponse);
+        assert_eq!(msg.method, Method::BINDING);
+        assert_eq!(msg.transaction_id, TransactionId::new([3; 12]));
+        assert_eq!(
+            msg.attr::<XorMappedAddress>(),
+            Some(XorMappedAddress { addr })
+        );
+        assert!(bytes.is_empty());
+        assert!(codec.header.is_none());
     }
 
     #[test]
@@ -193,11 +211,13 @@ mod tests {
         let mut bytes = BytesMut::from(&b"nonsense"[..]);
         let len = bytes.len();
 
-        let mut codec = StunCodec;
+        let mut codec = MessageCodec::new();
         match codec.decode(&mut bytes) {
             Ok(Some(None)) => (),
             x => panic!("failed to decode non-STUN message {:?}", x),
         };
+
         assert_eq!(bytes.len(), len);
+        assert!(codec.header.is_none());
     }
 }
