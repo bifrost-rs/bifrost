@@ -33,12 +33,12 @@ impl Decoder for MessageCodec {
 
         let attributes = match many0(parse_attribute)(&src[HEADER_LEN..HEADER_LEN + len]) {
             Ok((rest, _)) if !rest.is_empty() => {
-                self.reset();
+                self.header = None;
                 return Ok(Some(None));
             }
             Ok((_, attrs)) => attrs,
             Err(_) => {
-                self.reset();
+                self.header = None;
                 return Ok(Some(None));
             }
         };

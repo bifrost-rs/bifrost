@@ -11,8 +11,4 @@ impl MessageCodec {
     pub fn new() -> Self {
         Self::default()
     }
-
-    fn reset(&mut self) {
-        self.header = None;
-    }
 }
