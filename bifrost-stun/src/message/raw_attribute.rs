@@ -2,7 +2,7 @@ use std::io;
 
 #[derive(Debug)]
 pub struct RawAttribute {
-    pub r#type: u16,
+    r#type: u16,
     value: Vec<u8>,
 }
 
@@ -22,16 +22,20 @@ impl RawAttribute {
         }
     }
 
+    pub fn r#type(&self) -> u16 {
+        self.r#type
+    }
+
+    pub fn value(&self) -> &[u8] {
+        &self.value
+    }
+
     pub fn unpadded_len(&self) -> u16 {
         self.value.len() as u16
     }
 
     pub fn padded_len(&self) -> u16 {
         (self.unpadded_len() + 3) & !0b11
-    }
-
-    pub fn value(&self) -> &[u8] {
-        &self.value
     }
 }
 

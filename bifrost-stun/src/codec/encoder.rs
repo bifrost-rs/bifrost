@@ -64,7 +64,7 @@ fn encode_transaction_id(tr_id: &TransactionId, dst: &mut BytesMut) {
 
 fn encode_attributes(attrs: &[RawAttribute], dst: &mut BytesMut) {
     for attr in attrs {
-        dst.put_u16_be(attr.r#type);
+        dst.put_u16_be(attr.r#type());
         dst.put_u16_be(attr.unpadded_len());
         dst.put_slice(attr.value());
         for _ in attr.unpadded_len()..attr.padded_len() {
