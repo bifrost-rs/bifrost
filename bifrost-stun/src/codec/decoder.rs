@@ -18,7 +18,8 @@ impl Decoder for MessageCodec {
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
         if self.header.is_none() {
             // TODO: Make maximum length customizable.
-            self.header = match parse_header_streaming(src, u16::max_value() - HEADER_LEN) {
+            let max_len = u16::max_value() - HEADER_LEN;
+            self.header = match parse_header_streaming(src, max_len) {
                 Ok((_, header)) => Some(header),
                 Err(nom::Err::Incomplete(_)) => return Ok(None),
                 Err(_) => return Ok(Some(None)),
