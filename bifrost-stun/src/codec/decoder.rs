@@ -17,38 +17,36 @@ impl Decoder for MessageCodec {
 
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
         if self.header.is_none() {
-            self.header = match parse_header(src) {
+            // TODO: Make maximum length customizable.
+            self.header = match parse_header_streaming(src, u16::max_value() - HEADER_LEN) {
                 Ok((_, header)) => Some(header),
                 Err(nom::Err::Incomplete(_)) => return Ok(None),
                 Err(_) => return Ok(Some(None)),
             };
         }
 
-        let len = self.header.as_ref().unwrap().2;
+        let attrs_len = self.header.as_ref().unwrap().2;
+        let total_len = HEADER_LEN + attrs_len;
 
-        // TODO: Make maximum length customizable.
-        if len >= u16::max_value() - HEADER_LEN {
-            self.header = None;
-            return Ok(Some(None));
-        }
-        if src.len() < (HEADER_LEN + len) as usize {
+        // TODO: Parse attributes as they come in.
+        if src.len() < total_len as usize {
             return Ok(None);
         }
 
-        let attributes =
-            match many0(parse_attribute)(&src[HEADER_LEN as usize..(HEADER_LEN + len) as usize]) {
-                Ok((rest, _)) if !rest.is_empty() => {
-                    self.header = None;
-                    return Ok(Some(None));
-                }
-                Ok((_, attrs)) => attrs,
-                Err(_) => {
-                    self.header = None;
-                    return Ok(Some(None));
-                }
-            };
+        let attrs_buf = &src[HEADER_LEN as usize..total_len as usize];
+        let attributes = match many0(parse_attribute)(attrs_buf) {
+            Ok((rest, _)) if !rest.is_empty() => {
+                self.header = None;
+                return Ok(Some(None));
+            }
+            Ok((_, attrs)) => attrs,
+            Err(_) => {
+                self.header = None;
+                return Ok(Some(None));
+            }
+        };
 
-        src.advance((HEADER_LEN + len) as usize);
+        src.advance(total_len as usize);
         let (class, method, _, transaction_id) = self.header.take().unwrap();
 
         Ok(Some(Some(Message {
@@ -60,18 +58,21 @@ impl Decoder for MessageCodec {
     }
 }
 
-fn parse_header(input: &[u8]) -> IResult<&[u8], (Class, Method, u16, TransactionId)> {
+fn parse_header_streaming(
+    input: &[u8],
+    max_len: u16,
+) -> IResult<&[u8], (Class, Method, u16, TransactionId)> {
     use nom::{
         bytes::streaming::{tag, take},
         number::streaming::be_u16,
     };
 
-    let (rest, (class, method)) = bits(parse_class_and_method)(input)?;
+    let (rest, (class, method)) = bits(parse_class_and_method_streaming)(input)?;
 
     // The message length MUST contain the size, in bytes, of the message not
     // including the 20-byte STUN header. Since all STUN attributes are padded
     // to a multiple of 4 bytes, the last 2 bits of this field are always zero.
-    let (rest, len) = verify(be_u16, |x| x % 4 == 0)(rest)?;
+    let (rest, len) = verify(be_u16, |&len| len % 4 == 0 && len <= max_len)(rest)?;
 
     // The magic cookie field MUST contain the fixed value 0x2112A442 in network
     // byte order.
@@ -85,7 +86,9 @@ fn parse_header(input: &[u8]) -> IResult<&[u8], (Class, Method, u16, Transaction
     Ok((rest, (class, method, len, tr_id)))
 }
 
-fn parse_class_and_method(input: (&[u8], usize)) -> IResult<(&[u8], usize), (Class, Method)> {
+fn parse_class_and_method_streaming(
+    input: (&[u8], usize),
+) -> IResult<(&[u8], usize), (Class, Method)> {
     use nom::bits::streaming::{tag, take};
 
     // The most significant 2 bits of every STUN message MUST be zeroes.

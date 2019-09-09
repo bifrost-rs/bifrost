@@ -12,24 +12,25 @@ impl Encoder for MessageCodec {
     type Error = io::Error;
 
     fn encode(&mut self, item: Self::Item, dst: &mut BytesMut) -> Result<(), Self::Error> {
-        let len: usize = item
+        let attrs_len: usize = item
             .attributes
             .iter()
             .map(|a| ATTR_HEADER_LEN as usize + a.padded_len() as usize)
             .sum();
 
         // TODO: Make maximum length customizable.
-        if len >= (u16::max_value() - HEADER_LEN) as usize {
+        if attrs_len >= (u16::max_value() - HEADER_LEN) as usize {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "attributes length too large",
             ));
         }
-        let len = len as u16;
+        let attrs_len = attrs_len as u16;
+        let total_len = HEADER_LEN + attrs_len;
 
-        dst.reserve((HEADER_LEN + len) as usize);
+        dst.reserve(total_len as usize);
         encode_class_and_method(item.class, item.method, dst);
-        encode_len(len, dst);
+        encode_len(attrs_len, dst);
         encode_magic_cookie(dst);
         encode_transaction_id(&item.transaction_id, dst);
         encode_attributes(&item.attributes, dst);
@@ -80,13 +81,12 @@ mod tests {
     #[test]
     fn test_success() {
         for addr in test_util::get_test_addrs() {
-            let mut codec = MessageCodec::new();
             let msg = test_util::new_test_msg(addr);
             let mut bytes = BytesMut::new();
+            let mut codec = MessageCodec::new();
             codec.encode(msg, &mut bytes).unwrap();
 
             let expected = test_util::new_reference_msg(addr);
-            assert_eq!(bytes.len(), expected.len());
             assert_eq!(bytes, expected);
         }
     }
