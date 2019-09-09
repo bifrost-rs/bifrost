@@ -26,14 +26,14 @@ impl Decoder for MessageCodec {
         }
 
         let attrs_len = self.header.as_ref().unwrap().2;
-        let total_len = HEADER_LEN + attrs_len;
+        let total_len = (HEADER_LEN + attrs_len) as usize;
 
         // TODO: Parse attributes as they come in.
-        if src.len() < total_len as usize {
+        if src.len() < total_len {
             return Ok(None);
         }
 
-        let attrs_buf = &src[HEADER_LEN as usize..total_len as usize];
+        let attrs_buf = &src[HEADER_LEN as usize..total_len];
         let attributes = match many0(parse_attribute)(attrs_buf) {
             Ok((rest, _)) if !rest.is_empty() => {
                 self.header = None;
@@ -46,7 +46,7 @@ impl Decoder for MessageCodec {
             }
         };
 
-        src.advance(total_len as usize);
+        src.advance(total_len);
         let (class, method, _, transaction_id) = self.header.take().unwrap();
 
         Ok(Some(Some(Message {
