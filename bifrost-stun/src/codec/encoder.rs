@@ -78,6 +78,15 @@ mod tests {
     use super::*;
     use crate::message::attribute::{Attribute, XorMappedAddress};
 
+    fn get_test_addrs() -> Vec<SocketAddr> {
+        vec![
+            "213.141.156.236:48583".parse().unwrap(),
+            "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:443"
+                .parse()
+                .unwrap(),
+        ]
+    }
+
     fn new_test_msg(addr: SocketAddr) -> Message {
         let transaction_id = TransactionId::new([3; 12]);
         let attributes = vec![XorMappedAddress(addr).to_raw(&transaction_id)];
@@ -110,15 +119,15 @@ mod tests {
 
     #[test]
     fn test_success() {
-        let addr = "213.141.156.236:48583".parse().unwrap();
+        for addr in get_test_addrs() {
+            let mut codec = MessageCodec::new();
+            let msg = new_test_msg(addr);
+            let mut bytes = BytesMut::new();
+            codec.encode(msg, &mut bytes).unwrap();
 
-        let mut codec = MessageCodec::new();
-        let msg = new_test_msg(addr);
-        let mut bytes = BytesMut::new();
-        codec.encode(msg, &mut bytes).unwrap();
-
-        let expected = new_test_msg_bytes(addr);
-        assert_eq!(bytes.len(), expected.len());
-        assert_eq!(bytes, expected);
+            let expected = new_test_msg_bytes(addr);
+            assert_eq!(bytes.len(), expected.len());
+            assert_eq!(bytes, expected);
+        }
     }
 }

@@ -126,6 +126,15 @@ mod tests {
     use super::*;
     use crate::message::attribute::XorMappedAddress;
 
+    fn get_test_addrs() -> Vec<SocketAddr> {
+        vec![
+            "213.141.156.236:48583".parse().unwrap(),
+            "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:443"
+                .parse()
+                .unwrap(),
+        ]
+    }
+
     fn new_test_msg(addr: SocketAddr) -> BytesMut {
         use bytecodec::EncodeExt;
         use stun_codec::{
@@ -146,60 +155,62 @@ mod tests {
 
     #[test]
     fn test_success() {
-        let addr = "213.141.156.236:48583".parse().unwrap();
-        let mut bytes = new_test_msg(addr);
-        bytes.extend(0..3);
+        for addr in get_test_addrs() {
+            let mut bytes = new_test_msg(addr);
+            bytes.extend(0..3);
 
-        let mut codec = MessageCodec::new();
-        let msg = match codec.decode(&mut bytes) {
-            Ok(Some(Some(msg))) => msg,
-            _ => panic!("failed to decode"),
-        };
+            let mut codec = MessageCodec::new();
+            let msg = match codec.decode(&mut bytes) {
+                Ok(Some(Some(msg))) => msg,
+                _ => panic!("failed to decode"),
+            };
 
-        assert_eq!(msg.class, Class::SuccessResponse);
-        assert_eq!(msg.method, Method::BINDING);
-        assert_eq!(msg.transaction_id, TransactionId::new([3; 12]));
-        assert_eq!(msg.attr::<XorMappedAddress>(), Some(XorMappedAddress(addr)));
-        assert_eq!(bytes.len(), 3);
-        assert!(codec.header.is_none());
+            assert_eq!(msg.class, Class::SuccessResponse);
+            assert_eq!(msg.method, Method::BINDING);
+            assert_eq!(msg.transaction_id, TransactionId::new([3; 12]));
+            assert_eq!(msg.attr::<XorMappedAddress>(), Some(XorMappedAddress(addr)));
+            assert_eq!(bytes.len(), 3);
+            assert!(codec.header.is_none());
+        }
     }
 
     #[test]
     fn test_incomplete() {
-        let addr = "213.141.156.236:48583".parse().unwrap();
-        let mut bytes = new_test_msg(addr);
-        let mut codec = MessageCodec::new();
+        for addr in get_test_addrs() {
+            let mut bytes = new_test_msg(addr);
+            let mut codec = MessageCodec::new();
 
-        let len = bytes.len();
-        for new_len in (0..len).step_by(3) {
-            unsafe {
-                bytes.set_len(new_len);
+            let len = bytes.len();
+            for new_len in (0..len).step_by(3) {
+                unsafe {
+                    bytes.set_len(new_len);
+                }
+                match codec.decode(&mut bytes) {
+                    Ok(None) => (),
+                    _ => panic!("failed to decode incomplete message"),
+                };
+
+                assert_eq!(bytes.len(), new_len);
+                if new_len >= HEADER_LEN as usize {
+                    assert!(codec.header.is_some());
+                }
             }
-            match codec.decode(&mut bytes) {
-                Ok(None) => (),
-                _ => panic!("failed to decode incomplete message"),
+
+            unsafe {
+                bytes.set_len(len);
+            }
+            let msg = match codec.decode(&mut bytes) {
+                Ok(Some(Some(msg))) => msg,
+                _ => panic!("failed to eventually decode complete message"),
             };
 
-            assert_eq!(bytes.len(), new_len);
-            if new_len >= HEADER_LEN as usize {
-                assert!(codec.header.is_some());
-            }
+            assert_eq!(msg.class, Class::SuccessResponse);
+            assert_eq!(msg.method, Method::BINDING);
+            assert_eq!(msg.transaction_id, TransactionId::new([3; 12]));
+            assert_eq!(msg.attr::<XorMappedAddress>(), Some(XorMappedAddress(addr)));
+            assert!(bytes.is_empty());
+            assert!(codec.header.is_none());
         }
-
-        unsafe {
-            bytes.set_len(len);
-        }
-        let msg = match codec.decode(&mut bytes) {
-            Ok(Some(Some(msg))) => msg,
-            _ => panic!("failed to eventually decode complete message"),
-        };
-
-        assert_eq!(msg.class, Class::SuccessResponse);
-        assert_eq!(msg.method, Method::BINDING);
-        assert_eq!(msg.transaction_id, TransactionId::new([3; 12]));
-        assert_eq!(msg.attr::<XorMappedAddress>(), Some(XorMappedAddress(addr)));
-        assert!(bytes.is_empty());
-        assert!(codec.header.is_none());
     }
 
     #[test]
