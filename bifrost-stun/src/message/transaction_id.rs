@@ -6,7 +6,7 @@ impl TransactionId {
         Self(bytes)
     }
 
-    pub const fn bytes(&self) -> &[u8; 12] {
+    pub const fn as_bytes(&self) -> &[u8; 12] {
         &self.0
     }
 }

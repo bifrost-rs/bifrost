@@ -27,7 +27,7 @@ impl Message {
     pub fn attr<T: Attribute>(&self) -> Option<T> {
         self.attributes.iter().find_map(|attr| {
             if attr.r#type == T::TYPE {
-                T::from_raw(&attr.value[..], &self.transaction_id)
+                T::from_raw(attr.value(), &self.transaction_id)
             } else {
                 None
             }

@@ -8,4 +8,8 @@ impl Method {
         bits[0] &= 0b1111;
         Self(bits)
     }
+
+    pub const fn as_bytes(&self) -> [u8; 2] {
+        self.0
+    }
 }

@@ -1,9 +1,9 @@
 #[derive(Debug, Eq, PartialEq)]
 pub enum Class {
     Request,
+    Indication,
     SuccessResponse,
     FailureResponse,
-    Indication,
 }
 
 impl Class {
@@ -14,6 +14,15 @@ impl Class {
             0b10 => Self::SuccessResponse,
             0b11 => Self::FailureResponse,
             _ => unreachable!(),
+        }
+    }
+
+    pub fn as_byte(&self) -> u8 {
+        match self {
+            Self::Request => 0b00,
+            Self::Indication => 0b01,
+            Self::SuccessResponse => 0b10,
+            Self::FailureResponse => 0b11,
         }
     }
 }

@@ -6,14 +6,12 @@ use nom::{
 };
 use std::net::{IpAddr, SocketAddr};
 
-use crate::message::{attribute::Attribute, TransactionId, MAGIC_COOKIE};
+use crate::message::{attribute::Attribute, RawAttribute, TransactionId, MAGIC_COOKIE};
 
 /// The XOR-MAPPED-ADDRESS attribute, defined in
 /// [RFC 5389](https://tools.ietf.org/html/rfc5389#section-15.2).
 #[derive(Debug, Eq, PartialEq)]
-pub struct XorMappedAddress {
-    pub addr: SocketAddr,
-}
+pub struct XorMappedAddress(pub SocketAddr);
 
 impl Attribute for XorMappedAddress {
     const TYPE: u16 = 0x0020;
@@ -22,6 +20,37 @@ impl Attribute for XorMappedAddress {
         parse(raw, tr_id)
             .ok()
             .and_then(|(rest, attr)| if rest.is_empty() { Some(attr) } else { None })
+    }
+
+    // TODO: Add tests
+    fn to_raw(&self, tr_id: &TransactionId) -> RawAttribute {
+        let is_ipv4 = self.0.is_ipv4();
+        let len: u16 = if is_ipv4 { 8 } else { 20 };
+        let mut buf = Vec::with_capacity(len as usize);
+
+        buf.push(0);
+        buf.push(if is_ipv4 { 1 } else { 2 });
+
+        let x_port = self.0.port() ^ u16::from_be_bytes([MAGIC_COOKIE[0], MAGIC_COOKIE[1]]);
+        buf.extend(&x_port.to_be_bytes());
+
+        match self.0.ip() {
+            IpAddr::V4(addr) => {
+                let bytes = xor_4_bytes(&addr.octets(), MAGIC_COOKIE);
+                buf.extend(&bytes);
+            }
+            IpAddr::V6(addr) => {
+                let mut xor_bytes = [0u8; 16];
+                xor_bytes[..4].copy_from_slice(&MAGIC_COOKIE);
+                xor_bytes[4..].copy_from_slice(tr_id.as_bytes());
+
+                let bytes = xor_16_bytes(&addr.octets(), xor_bytes);
+
+                buf.extend(&bytes);
+            }
+        }
+
+        RawAttribute::new(Self::TYPE, buf).unwrap()
     }
 }
 
@@ -58,17 +87,12 @@ fn parse<'a>(input: &'a [u8], tr_id: &TransactionId) -> IResult<&'a [u8], XorMap
 
         let mut xor_bytes = [0u8; 16];
         xor_bytes[..4].copy_from_slice(&MAGIC_COOKIE);
-        xor_bytes[4..].copy_from_slice(tr_id.bytes());
+        xor_bytes[4..].copy_from_slice(tr_id.as_bytes());
 
         (rest, IpAddr::from(xor_16_bytes(x_addr, xor_bytes)))
     };
 
-    Ok((
-        rest,
-        XorMappedAddress {
-            addr: SocketAddr::new(ip_addr, port),
-        },
-    ))
+    Ok((rest, XorMappedAddress(SocketAddr::new(ip_addr, port))))
 }
 
 fn xor_4_bytes(a: &[u8], mut b: [u8; 4]) -> [u8; 4] {
@@ -129,9 +153,7 @@ mod tests {
     fn test_ipv4() {
         let raw = [0x00, 0x01, 0x9c, 0xd5, 0xf4, 0x9f, 0x38, 0xae];
         let attr = XorMappedAddress::from_raw(&raw, &TR_ID).unwrap();
-        let expected = XorMappedAddress {
-            addr: "213.141.156.236:48583".parse().unwrap(),
-        };
+        let expected = XorMappedAddress("213.141.156.236:48583".parse().unwrap());
         assert_eq!(attr, expected);
     }
 
@@ -142,11 +164,11 @@ mod tests {
             0xd5, 0xc4, 0xef, 0x7b, 0xd4, 0xe3,
         ];
         let attr = XorMappedAddress::from_raw(&raw, &TR_ID).unwrap();
-        let expected = XorMappedAddress {
-            addr: "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:443"
+        let expected = XorMappedAddress(
+            "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:443"
                 .parse()
                 .unwrap(),
-        };
+        );
         assert_eq!(attr, expected);
     }
 

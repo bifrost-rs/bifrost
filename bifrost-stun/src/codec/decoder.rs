@@ -7,11 +7,9 @@ use std::{convert::TryInto, io};
 use tokio_codec::Decoder;
 
 use crate::{
-    codec::MessageCodec,
+    codec::{MessageCodec, HEADER_LEN},
     message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE},
 };
-
-const HEADER_LEN: usize = 20;
 
 impl Decoder for MessageCodec {
     type Item = Option<Message>;
@@ -26,24 +24,25 @@ impl Decoder for MessageCodec {
             };
         }
 
-        let len: usize = self.header.as_ref().unwrap().2.into();
-        if src.len() < HEADER_LEN + len {
+        let len = self.header.as_ref().unwrap().2;
+        if src.len() < (HEADER_LEN + len) as usize {
             return Ok(None);
         }
 
-        let attributes = match many0(parse_attribute)(&src[HEADER_LEN..HEADER_LEN + len]) {
-            Ok((rest, _)) if !rest.is_empty() => {
-                self.header = None;
-                return Ok(Some(None));
-            }
-            Ok((_, attrs)) => attrs,
-            Err(_) => {
-                self.header = None;
-                return Ok(Some(None));
-            }
-        };
+        let attributes =
+            match many0(parse_attribute)(&src[HEADER_LEN as usize..(HEADER_LEN + len) as usize]) {
+                Ok((rest, _)) if !rest.is_empty() => {
+                    self.header = None;
+                    return Ok(Some(None));
+                }
+                Ok((_, attrs)) => attrs,
+                Err(_) => {
+                    self.header = None;
+                    return Ok(Some(None));
+                }
+            };
 
-        src.advance(HEADER_LEN + len);
+        src.advance((HEADER_LEN + len) as usize);
         let (class, method, _, transaction_id) = self.header.take().unwrap();
 
         Ok(Some(Some(Message {
@@ -114,7 +113,10 @@ fn parse_attribute(input: &[u8]) -> IResult<&[u8], RawAttribute> {
     let (rest, value) = take(padded_len)(rest)?;
     let value = Vec::from(&value[..len.into()]);
 
-    Ok((rest, RawAttribute { r#type, value }))
+    // OK to unwrap because we already verified the length above.
+    let attr = RawAttribute::new(r#type, value).unwrap();
+
+    Ok((rest, attr))
 }
 
 #[cfg(test)]
@@ -131,15 +133,15 @@ mod tests {
             Message, MessageClass, MessageEncoder, TransactionId,
         };
 
-        let mut message = Message::new(
+        let mut msg = Message::new(
             MessageClass::SuccessResponse,
             BINDING,
             TransactionId::new([3; 12]),
         );
-        message.add_attribute(Attribute::XorMappedAddress(XorMappedAddress::new(addr)));
+        msg.add_attribute(Attribute::XorMappedAddress(XorMappedAddress::new(addr)));
 
         let mut encoder = MessageEncoder::new();
-        BytesMut::from(encoder.encode_into_bytes(message.clone()).unwrap())
+        BytesMut::from(encoder.encode_into_bytes(msg).unwrap())
     }
 
     #[test]
@@ -157,10 +159,7 @@ mod tests {
         assert_eq!(msg.class, Class::SuccessResponse);
         assert_eq!(msg.method, Method::BINDING);
         assert_eq!(msg.transaction_id, TransactionId::new([3; 12]));
-        assert_eq!(
-            msg.attr::<XorMappedAddress>(),
-            Some(XorMappedAddress { addr })
-        );
+        assert_eq!(msg.attr::<XorMappedAddress>(), Some(XorMappedAddress(addr)));
         assert_eq!(bytes.len(), 3);
         assert!(codec.header.is_none());
     }
@@ -182,7 +181,7 @@ mod tests {
             };
 
             assert_eq!(bytes.len(), new_len);
-            if new_len >= HEADER_LEN {
+            if new_len >= HEADER_LEN as usize {
                 assert!(codec.header.is_some());
             }
         }
@@ -198,10 +197,7 @@ mod tests {
         assert_eq!(msg.class, Class::SuccessResponse);
         assert_eq!(msg.method, Method::BINDING);
         assert_eq!(msg.transaction_id, TransactionId::new([3; 12]));
-        assert_eq!(
-            msg.attr::<XorMappedAddress>(),
-            Some(XorMappedAddress { addr })
-        );
+        assert_eq!(msg.attr::<XorMappedAddress>(), Some(XorMappedAddress(addr)));
         assert!(bytes.is_empty());
         assert!(codec.header.is_none());
     }
