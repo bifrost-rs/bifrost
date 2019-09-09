@@ -25,6 +25,12 @@ impl Decoder for MessageCodec {
         }
 
         let len = self.header.as_ref().unwrap().2;
+
+        // TODO: Make maximum length customizable.
+        if len >= u16::max_value() - HEADER_LEN {
+            self.header = None;
+            return Ok(Some(None));
+        }
         if src.len() < (HEADER_LEN + len) as usize {
             return Ok(None);
         }

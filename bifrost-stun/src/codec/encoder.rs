@@ -15,9 +15,10 @@ impl Encoder for MessageCodec {
         let len: usize = item
             .attributes
             .iter()
-            .map(|a| usize::from(ATTR_HEADER_LEN + a.padded_len()))
+            .map(|a| ATTR_HEADER_LEN as usize + a.padded_len() as usize)
             .sum();
 
+        // TODO: Make maximum length customizable.
         if len >= (u16::max_value() - HEADER_LEN) as usize {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
