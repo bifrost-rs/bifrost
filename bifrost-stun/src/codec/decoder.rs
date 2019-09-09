@@ -127,42 +127,13 @@ fn parse_attribute(input: &[u8]) -> IResult<&[u8], RawAttribute> {
 
 #[cfg(test)]
 mod tests {
-    use std::net::SocketAddr;
-
     use super::*;
-    use crate::message::attribute::XorMappedAddress;
-
-    fn get_test_addrs() -> Vec<SocketAddr> {
-        vec![
-            "213.141.156.236:48583".parse().unwrap(),
-            "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:443"
-                .parse()
-                .unwrap(),
-        ]
-    }
-
-    fn new_test_msg(addr: SocketAddr) -> BytesMut {
-        use bytecodec::EncodeExt;
-        use stun_codec::{
-            rfc5389::{attributes::XorMappedAddress, methods::BINDING, Attribute},
-            Message, MessageClass, MessageEncoder, TransactionId,
-        };
-
-        let mut msg = Message::new(
-            MessageClass::SuccessResponse,
-            BINDING,
-            TransactionId::new([3; 12]),
-        );
-        msg.add_attribute(Attribute::XorMappedAddress(XorMappedAddress::new(addr)));
-
-        let mut encoder = MessageEncoder::new();
-        BytesMut::from(encoder.encode_into_bytes(msg).unwrap())
-    }
+    use crate::{message::attribute::XorMappedAddress, test_util};
 
     #[test]
     fn test_success() {
-        for addr in get_test_addrs() {
-            let mut bytes = new_test_msg(addr);
+        for addr in test_util::get_test_addrs() {
+            let mut bytes = test_util::new_reference_msg(addr);
             bytes.extend(0..3);
 
             let mut codec = MessageCodec::new();
@@ -182,8 +153,8 @@ mod tests {
 
     #[test]
     fn test_incomplete() {
-        for addr in get_test_addrs() {
-            let mut bytes = new_test_msg(addr);
+        for addr in test_util::get_test_addrs() {
+            let mut bytes = test_util::new_reference_msg(addr);
             let mut codec = MessageCodec::new();
 
             let len = bytes.len();
