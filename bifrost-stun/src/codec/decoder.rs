@@ -16,6 +16,8 @@ impl Decoder for MessageCodec {
     type Error = io::Error;
 
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
+        // The header is parsed only once in case a message isn't fully
+        // available at once.
         if self.header.is_none() {
             // TODO: Make maximum length customizable.
             let max_len = u16::max_value() - HEADER_LEN;
@@ -25,11 +27,12 @@ impl Decoder for MessageCodec {
                 Err(_) => return Ok(Some(None)),
             };
         }
+        // `self.header` is guaranteed to be a `Some` at this point.
 
         let attrs_len = self.header.as_ref().unwrap().2;
         let total_len = (HEADER_LEN + attrs_len) as usize;
 
-        // TODO: Parse attributes as they come in.
+        // Wait for the entire message to be available.
         if src.len() < total_len {
             return Ok(None);
         }
@@ -49,7 +52,6 @@ impl Decoder for MessageCodec {
 
         src.advance(total_len);
         let (class, method, _, transaction_id) = self.header.take().unwrap();
-
         Ok(Some(Some(Message {
             class,
             method,
@@ -113,15 +115,15 @@ fn parse_attribute(input: &[u8]) -> IResult<&[u8], RawAttribute> {
 
     // The value in the 16-bit length field MUST contain the length of the Value
     // part of the attribute, prior to padding, measured in bytes.
-    let (rest, len) = verify(be_u16, |x| *x <= RawAttribute::MAX_LEN)(rest)?;
+    let (rest, unpadded_len) = verify(be_u16, |x| *x <= RawAttribute::MAX_LEN)(rest)?;
 
     // Since STUN aligns attributes on 32-bit boundaries, attributes whose
     // content is not a multiple of 4 bytes are padded with 1, 2, or 3 bytes of
     // padding so that its value contains a multiple of 4 bytes. The padding
     // bits are ignored, and may be any value.
-    let padded_len = (len + 3) & !0b11;
+    let padded_len = (unpadded_len + 3) & !0b11;
     let (rest, value) = take(padded_len)(rest)?;
-    let value = Vec::from(&value[..len.into()]);
+    let value = Vec::from(&value[..unpadded_len as usize]);
 
     // OK to unwrap because we already verified the length above.
     let attr = RawAttribute::new(r#type, value).unwrap();
