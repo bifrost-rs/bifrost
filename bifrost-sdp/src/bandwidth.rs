@@ -57,7 +57,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "b=CT:256\r\nmore\r\n",
             "more\r\n",
@@ -71,7 +71,7 @@ mod tests {
     }
 
     #[test]
-    fn test_experimental() {
+    fn experimental() {
         assert_parse_display(
             "b=X-AB:512\r\n",
             "",
@@ -85,7 +85,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<Bandwidth>("b=A-AB:512\r\n");
         assert_err::<Bandwidth>("b=AB:foo\r\n");
     }

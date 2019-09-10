@@ -44,7 +44,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_valid_len() {
+    fn valid_len() {
         let a0 = RawAttribute::new(0, vec![]).unwrap();
         assert_eq!(a0.unpadded_len(), 0);
         assert_eq!(a0.padded_len(), 0);
@@ -59,7 +59,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_len() {
+    fn invalid_len() {
         assert!(RawAttribute::new(0, vec![0; RawAttribute::MAX_LEN as usize + 1]).is_err());
     }
 }

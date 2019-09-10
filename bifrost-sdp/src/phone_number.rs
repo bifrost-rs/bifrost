@@ -29,7 +29,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         let phone_number = "+1 617 555-6011";
         assert_parse_display(
             &format!("p={}\n\nresto\r\n", phone_number),
@@ -40,7 +40,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<PhoneNumber>("p=\r\n");
         assert_err::<PhoneNumber>("x=+1 617 555-6011\r\n");
     }

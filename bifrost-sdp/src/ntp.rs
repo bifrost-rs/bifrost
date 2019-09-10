@@ -93,7 +93,7 @@ mod tests {
     use crate::test_util::assert_err;
 
     #[test]
-    fn test_valid_instants() {
+    fn valid_instants() {
         assert_eq!(Instant::from_days(42).as_secs(), 42 * 86400);
         assert_eq!(Instant::from_hours(41).as_secs(), 41 * 3600);
         assert_eq!(Instant::from_mins(40).as_secs(), 40 * 60);
@@ -117,7 +117,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_instants() {
+    fn invalid_instants() {
         assert_err::<Instant>("s");
         assert_err::<Instant>(" 42");
         assert_err::<Instant>("");
@@ -125,7 +125,7 @@ mod tests {
     }
 
     #[test]
-    fn test_valid_durations() {
+    fn valid_durations() {
         assert_eq!(Duration::from_days(42).as_secs(), 42 * 86400);
         assert_eq!(Duration::from_hours(-41).as_secs(), -41 * 3600);
         assert_eq!(Duration::from_mins(40).as_secs(), 40 * 60);
@@ -152,7 +152,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_durations() {
+    fn invalid_durations() {
         assert_err::<Duration>("*42");
         assert_err::<Duration>(" 42");
         assert_err::<Duration>("s");

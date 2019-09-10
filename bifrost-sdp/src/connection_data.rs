@@ -53,7 +53,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "c=IN IP4 224.2.1.1/127/3\r\n rest\n",
             " rest\n",
@@ -67,7 +67,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<ConnectionData>("c=IN IP4\r\n");
         assert_err::<ConnectionData>("c=IN IP4 224.2.1.1/127/3 foo\r\n");
     }

@@ -137,7 +137,7 @@ mod tests {
     use crate::{message::attribute::XorMappedAddress, test_util};
 
     #[test]
-    fn test_success() {
+    fn success() {
         for addr in test_util::get_test_addrs() {
             let mut bytes = test_util::new_reference_msg(addr);
             bytes.extend(0..3);
@@ -158,7 +158,7 @@ mod tests {
     }
 
     #[test]
-    fn test_incomplete() {
+    fn incomplete() {
         for addr in test_util::get_test_addrs() {
             let mut bytes = test_util::new_reference_msg(addr);
             let mut codec = MessageCodec::new();
@@ -197,7 +197,7 @@ mod tests {
     }
 
     #[test]
-    fn test_failure() {
+    fn failure() {
         let mut bytes = BytesMut::from(&b"nonsense"[..]);
         let len = bytes.len();
 

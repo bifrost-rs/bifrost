@@ -44,7 +44,7 @@ mod tests {
     use crate::{Duration, Instant};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "t=3034423619 3042462419\r\nmore\n",
             "more\n",
@@ -128,7 +128,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<TimeDescription>("r=604800 3600 0 90000\r\nmore");
     }
 }

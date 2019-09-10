@@ -71,7 +71,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_clear() {
+    fn clear() {
         assert_parse_display(
             "k=clear:foo\r\nmore",
             "more",
@@ -83,7 +83,7 @@ mod tests {
     }
 
     #[test]
-    fn test_base64() {
+    fn base64() {
         assert_parse_display(
             "k=base64:foo\r\n\rmore",
             "\rmore",
@@ -95,7 +95,7 @@ mod tests {
     }
 
     #[test]
-    fn test_uri() {
+    fn uri() {
         let uri_str = "https://example.org/key";
         let uri = uri_str.parse().unwrap();
 
@@ -111,7 +111,7 @@ mod tests {
     }
 
     #[test]
-    fn test_prompt() {
+    fn prompt() {
         assert_parse_display(
             "k=prompt\r\nmore",
             "more",
@@ -123,7 +123,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<EncryptionKey>("k=foo\r\nmore");
         assert_err::<EncryptionKey>("k=foo:\r\nmore");
         assert_err::<EncryptionKey>("k=foo:bar\r\nmore");

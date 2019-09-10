@@ -79,7 +79,7 @@ mod tests {
     use crate::test_util;
 
     #[test]
-    fn test_success() {
+    fn success() {
         for addr in test_util::get_test_addrs() {
             let msg = test_util::new_test_msg(addr);
             let mut bytes = BytesMut::new();

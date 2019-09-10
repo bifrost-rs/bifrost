@@ -29,7 +29,7 @@ mod tests {
     use crate::test_util::assert_parse_display;
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "i=test info\nrest\n",
             "rest\n",

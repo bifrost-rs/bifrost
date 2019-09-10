@@ -74,7 +74,7 @@ mod tests {
     use crate::test_util;
 
     #[test]
-    fn test_basic() {
+    fn basic() {
         tokio_test::block_on(async {
             let agent = Agent::new(|_, _| future::ok(()));
             let done = Arc::new(AtomicUsize::new(0));

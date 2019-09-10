@@ -76,7 +76,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid_time_zone() {
+    fn valid_time_zone() {
         assert_eq!(
             TimeZone::parse("2882844526 -1h\r\n"),
             Ok((
@@ -101,13 +101,13 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_time_zone() {
+    fn invalid_time_zone() {
         assert_err::<TimeZone>("foo");
         assert_err::<TimeZone>("2 hello");
     }
 
     #[test]
-    fn test_valid_time_zones() {
+    fn valid_time_zones() {
         assert_parse_display(
             "z=2882844526 -1h\r\nmore",
             "more",
@@ -156,7 +156,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_time_zones() {
+    fn invalid_time_zones() {
         assert_err::<TimeZones>("z=1\r\n");
         assert_err::<TimeZones>("z=1 2 3\r\n");
         assert_err::<TimeZones>("z=1 2 3 4 5\r\n");

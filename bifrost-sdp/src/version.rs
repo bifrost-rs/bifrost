@@ -29,18 +29,18 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display("v=0\r\nmore", "more", &Version, "v=0\r\n");
         assert_parse_display("v=0\nrest\n", "rest\n", &Version, "v=0\r\n");
     }
 
     #[test]
-    fn test_unsupported_version() {
+    fn unsupported_version() {
         assert_err::<Version>("v=1\r\n");
     }
 
     #[test]
-    fn test_bad_format() {
+    fn bad_format() {
         assert_err::<Version>("v =0\r\n");
         assert_err::<Version>("v=0 \r\n");
         assert_err::<Version>("v=0\r");

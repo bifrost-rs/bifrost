@@ -264,7 +264,7 @@ a=rtpmap:99 h263-1998/90000
     }
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             &format!("{}more", EXAMPLE_SDP_INPUT),
             "more",
@@ -274,7 +274,7 @@ a=rtpmap:99 h263-1998/90000
     }
 
     #[test]
-    fn test_from_str() {
+    fn from_str() {
         assert_eq!(
             EXAMPLE_SDP_INPUT.parse::<SessionDescription>(),
             Ok(EXAMPLE_SDP.clone())

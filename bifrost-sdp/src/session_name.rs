@@ -29,7 +29,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "s=test\r\nrest\n",
             "rest\n",
@@ -46,7 +46,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<SessionName>("s=\r\n");
     }
 }

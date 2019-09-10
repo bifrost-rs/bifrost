@@ -47,13 +47,13 @@ mod tests {
     }
 
     #[test]
-    fn test_basic() {
+    fn basic() {
         assert_eq!(Test::parse("123.x"), Ok(("x", Test(123))));
         assert!(Test::parse("foo").is_err());
     }
 
     #[test]
-    fn test_opt() {
+    fn opt() {
         assert_eq!(
             <Option<Test> as Parse>::parse("123.x"),
             Ok(("x", Some(Test(123))))
@@ -62,7 +62,7 @@ mod tests {
     }
 
     #[test]
-    fn test_vec() {
+    fn vec() {
         assert_eq!(<Vec<Test> as Parse>::parse("foo"), Ok(("foo", vec![])));
         assert_eq!(
             <Vec<Test> as Parse>::parse("123.foo"),
@@ -75,7 +75,7 @@ mod tests {
     }
 
     #[test]
-    fn test_vec1() {
+    fn vec1() {
         use vec1::vec1;
 
         assert!(<Vec1<Test> as Parse>::parse("foo").is_err());

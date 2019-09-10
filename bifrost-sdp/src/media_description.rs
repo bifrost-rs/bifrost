@@ -66,7 +66,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid_1() {
+    fn valid_1() {
         assert_parse_display(
             "m=audio 49170 RTP/AVP 0\r\n",
             "",
@@ -88,7 +88,7 @@ mod tests {
     }
 
     #[test]
-    fn test_valid_2() {
+    fn valid_2() {
         assert_parse_display(
             "m=video 51372 RTP/AVP 99\r\n\
              a=rtpmap:99 h263-1998/90000\r\n\
@@ -116,7 +116,7 @@ mod tests {
     }
 
     #[test]
-    fn test_valid_3() {
+    fn valid_3() {
         assert_parse_display(
             "m=video 51372 RTP/AVP 99\r\n\
              i=good stuff\r\n\
@@ -177,7 +177,7 @@ mod tests {
     }
 
     #[test]
-    fn test_valid_4() {
+    fn valid_4() {
         assert_parse_display(
             "m=video 51372 RTP/AVP 99\r\n\
              c=IN IP4 224.2.1.1/127/3\r\n\
@@ -218,7 +218,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<MediaDescription>("");
         assert_err::<MediaDescription>("\r\n");
         assert_err::<MediaDescription>("a=foo\r\n");

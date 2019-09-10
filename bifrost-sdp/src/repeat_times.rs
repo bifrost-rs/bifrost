@@ -73,7 +73,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "r=1 2 -3\r\nmore",
             "more",
@@ -113,7 +113,7 @@ mod tests {
     }
 
     #[test]
-    fn test_valid_units() {
+    fn valid_units() {
         assert_parse_display(
             "r=1d -2h 3m\r\nmore",
             "more",
@@ -164,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<RepeatTimes>("r=1 2\r\nmore");
         assert_err::<RepeatTimes>("r=1 2  3\r\nmore");
         assert_err::<RepeatTimes>("r=1 2 3 \r\nmore");
@@ -172,7 +172,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_units() {
+    fn invalid_units() {
         assert_err::<RepeatTimes>("r=1x 2 3\r\nmore");
         assert_err::<RepeatTimes>("r=1d 2h 3x\r\nmore");
         assert_err::<RepeatTimes>("r=s 2 3\r\nmore");

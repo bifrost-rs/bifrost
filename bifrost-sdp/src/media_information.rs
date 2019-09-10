@@ -62,7 +62,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "m=audio 49170 RTP/AVP 0\r\nmore\n",
             "more\n",
@@ -101,7 +101,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<MediaInformation>("n=audio 49170 RTP/AVP 0\r\nmore\n");
         assert_err::<MediaInformation>("m=audio 49170 RTP/AVP\r\nmore\n");
     }

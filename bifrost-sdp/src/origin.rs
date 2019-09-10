@@ -73,7 +73,7 @@ mod tests {
     use crate::test_util::assert_parse_display;
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "o=- 4858251974351650128 2 IN IP4 127.0.0.1\r\nrest",
             "rest",

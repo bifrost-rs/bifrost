@@ -29,7 +29,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         let email_addr = "j.doe@example.com (Jane Doe)";
         assert_parse_display(
             &format!("e={}\n\nresto\r\n", email_addr),
@@ -40,7 +40,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<EmailAddress>("e=\r\n");
         assert_err::<EmailAddress>("x=foo@bar.com\r\n");
     }

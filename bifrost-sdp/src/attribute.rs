@@ -55,7 +55,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_property_attrs() {
+    fn property_attrs() {
         assert_parse_display(
             "a=foo\r\nmore",
             "more",
@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[test]
-    fn test_value_attrs() {
+    fn value_attrs() {
         assert_parse_display(
             "a=foo:bar\r\nmore",
             "more",
@@ -121,7 +121,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<Attribute>("a=\r\n");
         assert_err::<Attribute>("a=:\r\n");
         assert_err::<Attribute>("a=:x\r\n");

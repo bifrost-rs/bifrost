@@ -122,7 +122,7 @@ mod tests {
     ]);
 
     #[test]
-    fn test_xor_4_bytes() {
+    fn xor_4() {
         let a = [1, 2, 3, 4];
         let b = [5, 6, 7, 8];
         let c = xor_4_bytes(&a, b);
@@ -130,7 +130,7 @@ mod tests {
     }
 
     #[test]
-    fn test_xor_16_bytes() {
+    fn xor_16() {
         let a: Vec<_> = (1..=16).collect();
 
         let mut b = [0u8; 16];
@@ -150,7 +150,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ipv4() {
+    fn ipv4() {
         let raw = [0x00, 0x01, 0x9c, 0xd5, 0xf4, 0x9f, 0x38, 0xae];
         let attr = XorMappedAddress::from_raw(&raw, &TR_ID).unwrap();
         let expected = XorMappedAddress("213.141.156.236:48583".parse().unwrap());
@@ -158,7 +158,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ipv6() {
+    fn ipv6() {
         let raw = [
             0x00, 0x02, 0x20, 0xa9, 0x01, 0x13, 0xa9, 0xfa, 0x0a, 0xbb, 0x49, 0xd2, 0x05, 0x69,
             0xd5, 0xc4, 0xef, 0x7b, 0xd4, 0xe3,
@@ -173,19 +173,19 @@ mod tests {
     }
 
     #[test]
-    fn test_nonzero_prefix() {
+    fn nonzero_prefix() {
         let raw = [0x42, 0x01, 0x9c, 0xd5, 0xf4, 0x9f, 0x38, 0xae];
         assert!(XorMappedAddress::from_raw(&raw, &TR_ID).is_none());
     }
 
     #[test]
-    fn test_invalid_family() {
+    fn invalid_family() {
         let raw = [0x00, 0x03, 0x9c, 0xd5, 0xf4, 0x9f, 0x38, 0xae];
         assert!(XorMappedAddress::from_raw(&raw, &TR_ID).is_none());
     }
 
     #[test]
-    fn test_invalid_ipv4() {
+    fn invalid_ipv4() {
         let raw1 = [0x00, 0x01, 0x9c, 0xd5, 0xf4, 0x9f, 0x38];
         let raw2 = [0x00, 0x01, 0x9c, 0xd5, 0xf4, 0x9f, 0x38, 0xae, 0x42];
         assert!(XorMappedAddress::from_raw(&raw1, &TR_ID).is_none());
@@ -193,7 +193,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_ipv6() {
+    fn invalid_ipv6() {
         let raw1 = [
             0x00, 0x02, 0x20, 0xa9, 0x01, 0x13, 0xa9, 0xfa, 0x0a, 0xbb, 0x49, 0xd2, 0x05, 0x69,
             0xd5, 0xc4, 0xef, 0x7b, 0xd4,

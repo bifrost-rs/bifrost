@@ -49,7 +49,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         assert_parse_display(
             "t=123 456\nmore\r\n",
             "more\r\n",
@@ -62,7 +62,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<Timing>("t=123\r\n");
         assert_err::<Timing>("t=foo 456\r\n");
         assert_err::<Timing>("t=123 foo\r\n");

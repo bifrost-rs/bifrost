@@ -31,7 +31,7 @@ mod tests {
     use crate::test_util::{assert_err, assert_parse_display};
 
     #[test]
-    fn test_valid() {
+    fn valid() {
         let uri_str = "http://www.example.com/seminars/sdp.pdf";
         assert_parse_display(
             &format!("u={}\r\nrest\n", uri_str),
@@ -42,7 +42,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid() {
+    fn invalid() {
         assert_err::<Uri>("u=\r\n");
         assert_err::<Uri>("u= \r\n");
     }
