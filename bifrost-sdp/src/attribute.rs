@@ -1,3 +1,4 @@
+use crate::Parse;
 use nom::{
     bytes::complete::{is_not, tag},
     character::complete::{line_ending, not_line_ending},
@@ -5,8 +6,6 @@ use nom::{
     IResult,
 };
 use std::fmt;
-
-use crate::Parse;
 
 /// A parsed attribute line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.13).

@@ -1,9 +1,8 @@
-use nom::IResult;
-use std::fmt;
-
 use crate::{
     Attribute, Bandwidth, ConnectionData, EncryptionKey, Information, MediaInformation, Parse,
 };
+use nom::IResult;
+use std::fmt;
 
 /// A parsed SDP media description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
@@ -60,10 +59,9 @@ impl Parse for MediaDescription {
 
 #[cfg(test)]
 mod tests {
-    use vec1::vec1;
-
     use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
+    use vec1::vec1;
 
     #[test]
     fn valid_1() {

@@ -1,7 +1,6 @@
+use crate::{util, Parse};
 use nom::{combinator::map, IResult};
 use std::fmt;
-
-use crate::{util, Parse};
 
 /// A parsed information line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.4).

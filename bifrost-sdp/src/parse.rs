@@ -30,9 +30,8 @@ impl<T: Parse> Parse for Vec1<T> {
 
 #[cfg(test)]
 mod tests {
-    use nom::{bytes::complete::tag, character::complete::digit1, combinator::map_res};
-
     use super::*;
+    use nom::{bytes::complete::tag, character::complete::digit1, combinator::map_res};
 
     #[derive(Debug, PartialEq)]
     struct Test(i64);

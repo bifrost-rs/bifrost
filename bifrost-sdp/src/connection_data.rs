@@ -1,7 +1,6 @@
+use crate::{util, Parse};
 use nom::{bytes::complete::tag, character::complete::line_ending, IResult};
 use std::fmt;
-
-use crate::{util, Parse};
 
 /// A parsed connection data line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.7).

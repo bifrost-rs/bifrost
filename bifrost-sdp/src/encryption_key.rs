@@ -1,3 +1,4 @@
+use crate::Parse;
 use http::Uri;
 use nom::{
     branch::alt,
@@ -7,8 +8,6 @@ use nom::{
     IResult,
 };
 use std::fmt;
-
-use crate::Parse;
 
 /// A parsed encryption key line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.12).

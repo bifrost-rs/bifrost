@@ -1,3 +1,7 @@
+use crate::{
+    codec::{MessageCodec, HEADER_LEN},
+    message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE},
+};
 use bytes::BytesMut;
 use nom::{
     bits::bits, bytes::complete::take, combinator::verify, multi::many0, number::complete::be_u16,
@@ -5,11 +9,6 @@ use nom::{
 };
 use std::{convert::TryInto, io};
 use tokio_codec::Decoder;
-
-use crate::{
-    codec::{MessageCodec, HEADER_LEN},
-    message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE},
-};
 
 impl Decoder for MessageCodec {
     type Item = Option<Message>;

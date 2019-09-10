@@ -1,7 +1,6 @@
+use crate::{Parse, RepeatTimes, Timing};
 use nom::IResult;
 use std::fmt;
-
-use crate::{Parse, RepeatTimes, Timing};
 
 /// A parsed SDP time description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
@@ -37,11 +36,12 @@ impl Parse for TimeDescription {
 
 #[cfg(test)]
 mod tests {
-    use vec1::vec1;
-
     use super::*;
-    use crate::test_util::{assert_err, assert_parse_display};
-    use crate::{Duration, Instant};
+    use crate::{
+        test_util::{assert_err, assert_parse_display},
+        Duration, Instant,
+    };
+    use vec1::vec1;
 
     #[test]
     fn valid() {

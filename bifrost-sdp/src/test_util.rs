@@ -1,6 +1,5 @@
-use std::fmt::{Debug, Display};
-
 use crate::Parse;
+use std::fmt::{Debug, Display};
 
 pub fn assert_parse_display<T: Debug + Display + Parse + PartialEq>(
     input: &str,

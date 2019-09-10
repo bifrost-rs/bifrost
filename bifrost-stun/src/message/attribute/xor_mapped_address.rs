@@ -1,3 +1,4 @@
+use crate::message::{attribute::Attribute, RawAttribute, TransactionId, MAGIC_COOKIE};
 use nom::{
     bytes::complete::{tag, take},
     combinator::verify,
@@ -5,8 +6,6 @@ use nom::{
     IResult,
 };
 use std::net::{IpAddr, SocketAddr};
-
-use crate::message::{attribute::Attribute, RawAttribute, TransactionId, MAGIC_COOKIE};
 
 /// The XOR-MAPPED-ADDRESS attribute, defined in
 /// [RFC 5389](https://tools.ietf.org/html/rfc5389#section-15.2).

@@ -1,10 +1,9 @@
-use bytes::BytesMut;
-use std::net::SocketAddr;
-
 use crate::message::{
     attribute::{Attribute, XorMappedAddress},
     Class, Message, Method, TransactionId,
 };
+use bytes::BytesMut;
+use std::net::SocketAddr;
 
 pub fn get_test_addrs() -> Vec<SocketAddr> {
     vec![

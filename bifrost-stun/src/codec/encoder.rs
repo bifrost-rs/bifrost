@@ -1,11 +1,10 @@
-use bytes::{BufMut, BytesMut};
-use std::io;
-use tokio_codec::Encoder;
-
 use crate::{
     codec::{MessageCodec, ATTR_HEADER_LEN, HEADER_LEN},
     message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE},
 };
+use bytes::{BufMut, BytesMut};
+use std::io;
+use tokio_codec::Encoder;
 
 impl Encoder for MessageCodec {
     type Item = Message;

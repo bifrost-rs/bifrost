@@ -1,10 +1,9 @@
+use crate::{util, Parse};
 use nom::{
     bytes::complete::tag, character::complete::line_ending, multi::separated_nonempty_list, IResult,
 };
 use std::fmt;
 use vec1::Vec1;
-
-use crate::{util, Parse};
 
 /// A parsed media information line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.14).
@@ -56,10 +55,9 @@ impl Parse for MediaInformation {
 
 #[cfg(test)]
 mod tests {
-    use vec1::vec1;
-
     use super::*;
     use crate::test_util::{assert_err, assert_parse_display};
+    use vec1::vec1;
 
     #[test]
     fn valid() {

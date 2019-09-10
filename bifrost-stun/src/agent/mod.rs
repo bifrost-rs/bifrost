@@ -1,3 +1,4 @@
+use crate::message::{Message, TransactionId};
 use std::{
     collections::HashMap,
     future::Future,
@@ -8,8 +9,6 @@ use std::{
 };
 use tokio_sync::oneshot;
 use tokio_timer::Timeout;
-
-use crate::message::{Message, TransactionId};
 
 type TransactionKey = (TransactionId, SocketAddr);
 type TransactionMap = HashMap<TransactionKey, oneshot::Sender<Message>>;
@@ -67,11 +66,10 @@ where
 
 #[cfg(test)]
 mod tests {
-    use futures_util::future;
-    use std::sync::atomic::{AtomicUsize, Ordering};
-
     use super::*;
     use crate::test_util;
+    use futures_util::future;
+    use std::sync::atomic::{AtomicUsize, Ordering};
 
     #[test]
     fn basic() {

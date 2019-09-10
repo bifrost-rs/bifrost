@@ -1,7 +1,6 @@
+use crate::Parse;
 use nom::{bytes::complete::tag, character::complete::line_ending, IResult};
 use std::fmt;
-
-use crate::Parse;
 
 /// A parsed protocal version line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.1).

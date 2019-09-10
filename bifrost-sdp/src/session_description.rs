@@ -1,12 +1,11 @@
-use nom::IResult;
-use std::{fmt, str::FromStr};
-use vec1::Vec1;
-
 use crate::{
     Attribute, Bandwidth, ConnectionData, EmailAddress, EncryptionKey, Information,
     MediaDescription, Origin, Parse, PhoneNumber, SessionName, TimeDescription, TimeZones, Uri,
     Version,
 };
+use nom::IResult;
+use std::{fmt, str::FromStr};
+use vec1::Vec1;
 
 /// A parsed SDP session description, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5).
@@ -122,12 +121,13 @@ impl FromStr for SessionDescription {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::{
+        test_util::assert_parse_display, Duration, Instant, MediaInformation, RepeatTimes,
+        TimeZone, Timing,
+    };
     use lazy_static::lazy_static;
     use vec1::vec1;
-
-    use super::*;
-    use crate::test_util::assert_parse_display;
-    use crate::{Duration, Instant, MediaInformation, RepeatTimes, TimeZone, Timing};
 
     const EXAMPLE_SDP_INPUT: &str = r#"v=0
 o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5

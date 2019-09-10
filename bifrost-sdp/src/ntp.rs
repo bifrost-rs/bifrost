@@ -1,6 +1,5 @@
-use nom::{character::complete::digit1, combinator::map_res, IResult};
-
 use crate::Parse;
+use nom::{character::complete::digit1, combinator::map_res, IResult};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Instant(u64);

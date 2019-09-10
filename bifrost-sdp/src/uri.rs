@@ -1,11 +1,10 @@
+use crate::{util, Parse};
 use http::Uri as HttpUri;
 use nom::{
     combinator::{map, map_res},
     IResult,
 };
 use std::fmt;
-
-use crate::{util, Parse};
 
 /// A parsed URI line, defined in
 /// [RFC 4566](https://tools.ietf.org/html/rfc4566#section-5.5).
