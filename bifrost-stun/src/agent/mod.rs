@@ -1,12 +1,6 @@
 use crate::message::{Message, TransactionId};
-use std::{
-    collections::HashMap,
-    future::Future,
-    io,
-    net::SocketAddr,
-    sync::{Arc, Mutex},
-    time::Duration,
-};
+use futures_util::lock::Mutex;
+use std::{collections::HashMap, future::Future, io, net::SocketAddr, sync::Arc, time::Duration};
 use tokio_sync::oneshot;
 use tokio_timer::Timeout;
 
@@ -37,7 +31,7 @@ where
         // TODO: Handle key conflicts.
         self.transactions
             .lock()
-            .unwrap()
+            .await
             .insert((msg.transaction_id, addr), tx);
 
         // Let the callback actually send out the message.
@@ -51,11 +45,11 @@ where
         res.map_err(|_| io::Error::from(io::ErrorKind::Other))
     }
 
-    pub fn on_recv(&self, msg: Message, addr: SocketAddr) {
+    pub async fn on_recv(&self, msg: Message, addr: SocketAddr) {
         let tx = self
             .transactions
             .lock()
-            .unwrap()
+            .await
             .remove(&(msg.transaction_id, addr));
 
         if let Some(tx) = tx {
@@ -94,7 +88,7 @@ mod tests {
                 tokio_executor::spawn(async move {
                     // Simulate network latency.
                     tokio_timer::sleep(Duration::from_millis(500)).await;
-                    a.on_recv(test_util::new_test_msg(addr), addr);
+                    a.on_recv(test_util::new_test_msg(addr), addr).await;
                 });
             }
 

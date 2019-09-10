@@ -12,6 +12,7 @@ readme = "README.md"
 
 [dependencies]
 bytes = "0.4"
+futures-util-preview = { version = "=0.3.0-alpha.18", features = ["nightly", "cfg-target-has-atomic"] }
 nom = "5.0"
 tokio-codec = "=0.2.0-alpha.4"
 tokio-sync = "=0.2.0-alpha.4"
@@ -19,7 +20,6 @@ tokio-timer = "=0.3.0-alpha.4"
 
 [dev-dependencies]
 bytecodec = "0.4"
-futures-util-preview = "=0.3.0-alpha.18"
 stun_codec = "0.1"
 tokio-executor = "=0.2.0-alpha.4"
 tokio-test = "=0.2.0-alpha.4"
