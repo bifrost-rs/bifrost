@@ -1,35 +1,23 @@
-# Lint with rustfmt and Clippy
-lint_template: &LINT_TEMPLATE
+# Build and test against the version of Rust specified in `rust-toolchain`
+test_template: &TEST_TEMPLATE
+  test_script: cargo test --all-features --all-targets --all
+
+# Linux
+task:
+  name: Test on Linux
+  container:
+    image: rust:latest
   rustfmt_script:
     - rustup component add rustfmt
     - cargo fmt --all -- --check
   clippy_script:
     - rustup component add clippy
     - cargo clippy --all-targets --all-features --all -- -D warnings
-
-# Build and test against the version of Rust specified in `rust-toolchain`
-test_template: &TEST_TEMPLATE
-  test_script: cargo test --all-features --all-targets --all
-
-# Audit `Cargo.lock` for dependencies with security vulnerabilities
-audit_template: &AUDIT_TEMPLATE
-  audit_script:
-    - cargo install cargo-audit
-    - cargo generate-lockfile
-    - cargo audit
-
-# Linux
-task:
-  name: Linux
-  container:
-    image: rust:latest
-  <<: *LINT_TEMPLATE
   <<: *TEST_TEMPLATE
-  <<: *AUDIT_TEMPLATE
 
 # Windows
 task:
-  name: Windows
+  name: Test on Windows
   windows_container:
     image: cirrusci/windowsservercore:cmake
     os_version: 2019
@@ -43,13 +31,23 @@ task:
 # macOS and FreeBSD
 task:
   matrix:
-    - name: macOS
+    - name: Test on macOS
       osx_instance:
         image: mojave-base
-    - name: FreeBSD
+    - name: Test on FreeBSD
       freebsd_instance:
         image: freebsd-12-0-release-amd64
   env:
     PATH: $HOME/.cargo/bin:$PATH
   install_script: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
   <<: *TEST_TEMPLATE
+
+# Audit `Cargo.lock` for dependencies with security vulnerabilities
+task:
+  name: Audit dependencies
+  container:
+    image: rust:latest
+  audit_script:
+    - cargo install cargo-audit
+    - cargo generate-lockfile
+    - cargo audit
