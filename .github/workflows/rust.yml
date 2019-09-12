@@ -27,9 +27,8 @@ jobs:
         cargo clippy --all-targets --all-features --all -- -D warnings
 
     - name: Test
-      env:
-        PATH: ${{ $HOME/.cargo/bin:$PATH }}
-      run: echo $PATH
+      if: matrix.os != 'macOS-latest'
+      run: cargo test --all-targets --all-features --all
 
   # Audit in a separate job because installing cargo-audit takes a long time
   audit:
