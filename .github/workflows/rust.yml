@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    // Only lint on Linux as code style isn't platform-dependent
+    # Only lint on Linux as code style isn't platform-dependent
     - name: Lint
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -23,7 +23,7 @@ jobs:
     - name: Test
       run: cargo test --all-features --all-targets --all
 
-  // Audit in a separate job because installing cargo-audit takes a long time
+  # Audit in a separate job because installing cargo-audit takes a long time
   audit:
     runs-on: ubuntu-latest
     steps:
