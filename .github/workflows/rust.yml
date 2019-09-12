@@ -15,7 +15,7 @@ jobs:
     
     # macOS doesn't come with Rust installed
     - name: Install
-      if: matrix.os == 'macOS-latest'
+      if: startsWith(matrix.os, 'macOS')
       run: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
 
     # Only lint on Linux as code style isn't platform-dependent
@@ -26,9 +26,16 @@ jobs:
         cargo fmt --all -- --check
         cargo clippy --all-targets --all-features --all -- -D warnings
 
-    - name: Test
-      if: matrix.os != 'macOS-latest'
+    - name: Test (Linux & Windows)
+      if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'windows')
       run: cargo test --all-targets --all-features --all
+
+    # We installed Rust manually on macOS, so need to configure the environment
+    - name: Test (macOS)
+      if: startsWith(matrix.os, 'macOS')
+      run: |
+        source $HOME/.cargo/env
+        cargo test --all-targets --all-features --all
 
   # Audit in a separate job because installing cargo-audit takes a long time
   audit:
