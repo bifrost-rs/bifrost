@@ -27,6 +27,8 @@ jobs:
         cargo clippy --all-targets --all-features --all -- -D warnings
 
     - name: Test
+      env:
+        PATH: $HOME/.cargo/bin:$PATH
       run: cargo test --all-features --all-targets --all
 
   # Audit in a separate job because installing cargo-audit takes a long time
