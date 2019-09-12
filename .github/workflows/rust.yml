@@ -7,7 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Build
-      run: cargo build --all-features --all-targets --all
-    - name: Run tests
+    - name: Lint
+      run: |
+        rustup component add rustfmt clippy
+        cargo fmt --all -- --check
+        cargo clippy --all-targets --all-features --all -- -D warnings
+    - name: Test
       run: cargo test --all-features --all-targets --all
+    - name: Audit
+      run: |
+        cargo install cargo-audit
+        cargo audit
