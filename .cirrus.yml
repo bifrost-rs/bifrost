@@ -37,9 +37,9 @@ task:
     - name: Test on FreeBSD
       freebsd_instance:
         image: freebsd-12-0-release-amd64
-  env:
-    PATH: $HOME/.cargo/bin:$PATH
-  install_script: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+  install_script:
+    - curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+    - source $HOME/.cargo/env
   <<: *TEST_TEMPLATE
 
 # Audit `Cargo.lock` for dependencies with security vulnerabilities
