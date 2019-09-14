@@ -1,10 +1,8 @@
 use crate::Parse;
-use nom::{
-    bytes::complete::{is_not, tag},
-    character::complete::{line_ending, not_line_ending},
-    combinator::opt,
-    IResult,
-};
+use nom::bytes::complete::{is_not, tag};
+use nom::character::complete::{line_ending, not_line_ending};
+use nom::combinator::opt;
+use nom::IResult;
 use std::fmt;
 
 /// A parsed attribute line, defined in

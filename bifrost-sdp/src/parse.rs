@@ -1,8 +1,6 @@
-use nom::{
-    combinator::opt,
-    multi::{many0, many1},
-    IResult,
-};
+use nom::combinator::opt;
+use nom::multi::{many0, many1};
+use nom::IResult;
 use vec1::Vec1;
 
 pub trait Parse: Sized {
@@ -31,7 +29,10 @@ impl<T: Parse> Parse for Vec1<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use nom::{bytes::complete::tag, character::complete::digit1, combinator::map_res};
+    use nom::bytes::complete::tag;
+    use nom::character::complete::digit1;
+    use nom::combinator::map_res;
+    use vec1::vec1;
 
     #[derive(Debug, PartialEq)]
     struct Test(i64);
@@ -75,8 +76,6 @@ mod tests {
 
     #[test]
     fn vec1() {
-        use vec1::vec1;
-
         assert!(<Vec1<Test> as Parse>::parse("foo").is_err());
         assert_eq!(
             <Vec1<Test> as Parse>::parse("123.foo"),

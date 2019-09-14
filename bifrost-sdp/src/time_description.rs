@@ -37,10 +37,8 @@ impl Parse for TimeDescription {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        test_util::{assert_err, assert_parse_display},
-        Duration, Instant,
-    };
+    use crate::test_util::{assert_err, assert_parse_display};
+    use crate::{Duration, Instant};
     use vec1::vec1;
 
     #[test]

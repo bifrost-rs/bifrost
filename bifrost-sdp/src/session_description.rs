@@ -4,7 +4,8 @@ use crate::{
     Version,
 };
 use nom::IResult;
-use std::{fmt, str::FromStr};
+use std::fmt;
+use std::str::FromStr;
 use vec1::Vec1;
 
 /// A parsed SDP session description, defined in
@@ -122,10 +123,8 @@ impl FromStr for SessionDescription {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        test_util::assert_parse_display, Duration, Instant, MediaInformation, RepeatTimes,
-        TimeZone, Timing,
-    };
+    use crate::test_util::assert_parse_display;
+    use crate::{Duration, Instant, MediaInformation, RepeatTimes, TimeZone, Timing};
     use lazy_static::lazy_static;
     use vec1::vec1;
 

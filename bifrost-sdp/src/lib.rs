@@ -23,26 +23,24 @@ mod version;
 #[cfg(test)]
 mod test_util;
 
-pub use self::{
-    attribute::Attribute,
-    bandwidth::Bandwidth,
-    connection_data::ConnectionData,
-    email_address::EmailAddress,
-    encryption_key::EncryptionKey,
-    information::Information,
-    media_description::MediaDescription,
-    media_information::MediaInformation,
-    ntp::{Duration, Instant},
-    origin::Origin,
-    phone_number::PhoneNumber,
-    repeat_times::RepeatTimes,
-    session_description::SessionDescription,
-    session_name::SessionName,
-    time_description::TimeDescription,
-    time_zones::{TimeZone, TimeZones},
-    timing::Timing,
-    uri::Uri,
-    version::Version,
-};
+pub use self::attribute::Attribute;
+pub use self::bandwidth::Bandwidth;
+pub use self::connection_data::ConnectionData;
+pub use self::email_address::EmailAddress;
+pub use self::encryption_key::EncryptionKey;
+pub use self::information::Information;
+pub use self::media_description::MediaDescription;
+pub use self::media_information::MediaInformation;
+pub use self::ntp::{Duration, Instant};
+pub use self::origin::Origin;
+pub use self::phone_number::PhoneNumber;
+pub use self::repeat_times::RepeatTimes;
+pub use self::session_description::SessionDescription;
+pub use self::session_name::SessionName;
+pub use self::time_description::TimeDescription;
+pub use self::time_zones::{TimeZone, TimeZones};
+pub use self::timing::Timing;
+pub use self::uri::Uri;
+pub use self::version::Version;
 
 use self::parse::Parse;

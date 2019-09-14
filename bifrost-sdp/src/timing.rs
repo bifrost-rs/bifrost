@@ -1,5 +1,7 @@
 use crate::{Instant, Parse};
-use nom::{bytes::complete::tag, character::complete::line_ending, IResult};
+use nom::bytes::complete::tag;
+use nom::character::complete::line_ending;
+use nom::IResult;
 use std::fmt;
 
 /// A parsed timing line, defined in

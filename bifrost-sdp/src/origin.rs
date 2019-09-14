@@ -1,5 +1,8 @@
-use crate::{util, Parse};
-use nom::{bytes::complete::tag, character::complete::line_ending, IResult};
+use crate::util;
+use crate::Parse;
+use nom::bytes::complete::tag;
+use nom::character::complete::line_ending;
+use nom::IResult;
 use std::fmt;
 
 /// A parsed origin line, defined in

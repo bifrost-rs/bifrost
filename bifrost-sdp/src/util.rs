@@ -1,9 +1,7 @@
-use nom::{
-    bytes::complete::{is_not, tag},
-    character::complete::line_ending,
-    combinator::{map, map_res},
-    IResult,
-};
+use nom::bytes::complete::{is_not, tag};
+use nom::character::complete::line_ending;
+use nom::combinator::{map, map_res};
+use nom::IResult;
 use std::str::FromStr;
 
 /// Parses the input until a whitespace or a newline.

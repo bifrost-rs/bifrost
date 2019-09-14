@@ -1,9 +1,8 @@
-use crate::{util, Parse};
-use nom::{
-    bytes::complete::tag,
-    character::complete::{alphanumeric1, line_ending},
-    IResult,
-};
+use crate::util;
+use crate::Parse;
+use nom::bytes::complete::tag;
+use nom::character::complete::{alphanumeric1, line_ending};
+use nom::IResult;
 use std::fmt;
 
 /// A parsed bandwidth line, defined in

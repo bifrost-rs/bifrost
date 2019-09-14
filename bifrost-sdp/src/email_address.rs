@@ -1,5 +1,7 @@
-use crate::{util, Parse};
-use nom::{combinator::map, IResult};
+use crate::util;
+use crate::Parse;
+use nom::combinator::map;
+use nom::IResult;
 use std::fmt;
 
 /// A parsed email address line, defined in

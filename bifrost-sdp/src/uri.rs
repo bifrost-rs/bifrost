@@ -1,9 +1,8 @@
-use crate::{util, Parse};
+use crate::util;
+use crate::Parse;
 use http::Uri as HttpUri;
-use nom::{
-    combinator::{map, map_res},
-    IResult,
-};
+use nom::combinator::{map, map_res};
+use nom::IResult;
 use std::fmt;
 
 /// A parsed URI line, defined in
