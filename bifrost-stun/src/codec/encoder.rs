@@ -1,7 +1,5 @@
-use crate::{
-    codec::{MessageCodec, ATTR_HEADER_LEN, HEADER_LEN},
-    message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE},
-};
+use crate::codec::{MessageCodec, ATTR_HEADER_LEN, HEADER_LEN};
+use crate::message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE};
 use bytes::{BufMut, BytesMut};
 use std::io;
 use tokio_codec::Encoder;

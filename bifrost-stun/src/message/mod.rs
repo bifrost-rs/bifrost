@@ -5,9 +5,10 @@ mod method;
 mod raw_attribute;
 mod transaction_id;
 
-pub use self::{
-    class::Class, method::Method, raw_attribute::RawAttribute, transaction_id::TransactionId,
-};
+pub use self::class::Class;
+pub use self::method::Method;
+pub use self::raw_attribute::RawAttribute;
+pub use self::transaction_id::TransactionId;
 
 use crate::message::attribute::Attribute;
 

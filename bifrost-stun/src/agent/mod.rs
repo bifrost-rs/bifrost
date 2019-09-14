@@ -1,6 +1,11 @@
 use crate::message::{Message, TransactionId};
 use futures_util::lock::Mutex;
-use std::{collections::HashMap, future::Future, io, net::SocketAddr, sync::Arc, time::Duration};
+use std::collections::HashMap;
+use std::future::Future;
+use std::io;
+use std::net::SocketAddr;
+use std::sync::Arc;
+use std::time::Duration;
 use tokio_sync::oneshot;
 use tokio_timer::Timeout;
 

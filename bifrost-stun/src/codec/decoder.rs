@@ -1,13 +1,14 @@
-use crate::{
-    codec::{MessageCodec, HEADER_LEN},
-    message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE},
-};
+use crate::codec::{MessageCodec, HEADER_LEN};
+use crate::message::{Class, Message, Method, RawAttribute, TransactionId, MAGIC_COOKIE};
 use bytes::BytesMut;
-use nom::{
-    bits::bits, bytes::complete::take, combinator::verify, multi::many0, number::complete::be_u16,
-    IResult,
-};
-use std::{convert::TryInto, io};
+use nom::bits::bits;
+use nom::bytes::complete::take;
+use nom::combinator::verify;
+use nom::multi::many0;
+use nom::number::complete::be_u16;
+use nom::IResult;
+use std::convert::TryInto;
+use std::io;
 use tokio_codec::Decoder;
 
 impl Decoder for MessageCodec {
@@ -64,10 +65,8 @@ fn parse_header_streaming(
     input: &[u8],
     max_len: u16,
 ) -> IResult<&[u8], (Class, Method, u16, TransactionId)> {
-    use nom::{
-        bytes::streaming::{tag, take},
-        number::streaming::be_u16,
-    };
+    use nom::bytes::streaming::{tag, take};
+    use nom::number::streaming::be_u16;
 
     let (rest, (class, method)) = bits(parse_class_and_method_streaming)(input)?;
 
@@ -133,7 +132,8 @@ fn parse_attribute(input: &[u8]) -> IResult<&[u8], RawAttribute> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{message::attribute::XorMappedAddress, test_util};
+    use crate::message::attribute::XorMappedAddress;
+    use crate::test_util;
 
     #[test]
     fn success() {

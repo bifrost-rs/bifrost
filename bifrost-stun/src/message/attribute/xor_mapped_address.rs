@@ -1,10 +1,9 @@
-use crate::message::{attribute::Attribute, RawAttribute, TransactionId, MAGIC_COOKIE};
-use nom::{
-    bytes::complete::{tag, take},
-    combinator::verify,
-    number::complete::{be_u16, be_u8},
-    IResult,
-};
+use crate::message::attribute::Attribute;
+use crate::message::{RawAttribute, TransactionId, MAGIC_COOKIE};
+use nom::bytes::complete::{tag, take};
+use nom::combinator::verify;
+use nom::number::complete::{be_u16, be_u8};
+use nom::IResult;
 use std::net::{IpAddr, SocketAddr};
 
 /// The XOR-MAPPED-ADDRESS attribute, defined in

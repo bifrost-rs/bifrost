@@ -1,7 +1,5 @@
-use crate::message::{
-    attribute::{Attribute, XorMappedAddress},
-    Class, Message, Method, TransactionId,
-};
+use crate::message::attribute::{Attribute, XorMappedAddress};
+use crate::message::{Class, Message, Method, TransactionId};
 use bytes::BytesMut;
 use std::net::SocketAddr;
 
@@ -28,10 +26,10 @@ pub fn new_test_msg(addr: SocketAddr) -> Message {
 
 pub fn new_reference_msg(addr: SocketAddr) -> BytesMut {
     use bytecodec::EncodeExt;
-    use stun_codec::{
-        rfc5389::{attributes::XorMappedAddress, methods::BINDING, Attribute},
-        Message, MessageClass, MessageEncoder, TransactionId,
-    };
+    use stun_codec::rfc5389::attributes::XorMappedAddress;
+    use stun_codec::rfc5389::methods::BINDING;
+    use stun_codec::rfc5389::Attribute;
+    use stun_codec::{Message, MessageClass, MessageEncoder, TransactionId};
 
     let mut msg = Message::new(
         MessageClass::SuccessResponse,
