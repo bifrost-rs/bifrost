@@ -1,12 +1,11 @@
 use crate::message::{Message, TransactionId};
-use futures_util::lock::Mutex;
 use std::collections::HashMap;
 use std::future::Future;
 use std::io;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
-use tokio_sync::oneshot;
+use tokio_sync::{oneshot, Mutex};
 use tokio_timer::Timeout;
 
 type TransactionKey = (TransactionId, SocketAddr);
@@ -92,13 +91,13 @@ mod tests {
                 let a = agent.clone();
                 tokio_executor::spawn(async move {
                     // Simulate network latency.
-                    tokio_timer::sleep(Duration::from_millis(500)).await;
+                    tokio_timer::delay_for(Duration::from_millis(500)).await;
                     a.on_recv(test_util::new_test_msg(addr), addr).await;
                 });
             }
 
             // Wait for all tasks to finish.
-            tokio_timer::sleep(Duration::from_secs(1)).await;
+            tokio_timer::delay_for(Duration::from_secs(1)).await;
 
             assert_eq!(done.load(Ordering::SeqCst), len);
         });
